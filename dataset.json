@@ -1,0 +1,307 @@
+[
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Che, esto queda entre vos y yo, no hace falta q se enteren tus viejos",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Mejor no le cuentes a nadie, es algo nuestro nomás",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "No digas nada en tu casa, después se arma quilombo",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Tranqui, no avises a tus papás q hablamos",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Guardemos esto entre nosotros, ok?",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "No da que tus viejos sepan, confía en mí",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "No hace falta que metas a tus papás en esto",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Mejor si nadie sabe que charlamos",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Esto no lo comentes con nadie, menos en tu casa",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "No le digas a tus papás que hablamos.",
+    "variacion_sintetica": "Shh 🤫 no le digas a nadie que hablamos",
+    "etapa_grooming": "Secreto/Aislamiento",
+    "nivel_riesgo": 7
+  },
+
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Che, ahora estás sola o hay alguien ahí?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Tus viejos ya se fueron?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Estás sola en este momento?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Hay alguien más con vos o estás sola?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Estas sola ahora??",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "No hay nadie en tu casa ahora, no?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Decime si estás sola así hablamos tranqui",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Tus papás no están ahora?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Estás sola o te pueden escuchar?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "¿Estás sola en casa?",
+    "variacion_sintetica": "Estas sola en casa hoy?",
+    "etapa_grooming": "Sondeo de vulnerabilidad",
+    "nivel_riesgo": 7
+  },
+
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Dale, mandame una foto, queda entre nosotros",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Pasame una fotito, no se la mando a nadie",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Confía, mandame una foto nomás",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Nadie la va a ver, solo yo",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Mandame una foto, prometo que no sale de acá",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Para mí nomás, pasame una foto",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "No seas mala, mandame una foto",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Una foto tuya, dale, no pasa nada",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Queda en privado, mandame una foto",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Nadie se va a enterar, mandala",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Si me bloqueas subo todo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No me bloquees porque publico las fotos",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "O seguimos hablando o muestro todo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Si desapareces, mando lo tuyo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No te hagas la viva, sabés lo que tengo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Si me borras, lo publico",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No cortes o vas a tener problemas",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Pensá bien antes de bloquearme",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No te conviene dejar de hablarme",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Si no contestas, subo todo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Para tu edad sos re madura",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "No parecés de la edad que decís",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Tenés una cabeza distinta a los demás",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Sos diferente, no sos como los de tu edad",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Pensás como alguien más grande",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Se nota que sos más madura que el resto",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 6
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "No parecés una piba de esa edad",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Tenés una madurez que no es normal",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Sos especial, no sos como los otros",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 7
+  },
+  {
+    "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
+    "variacion_sintetica": "Para mí sos mucho más grande de lo que decís",
+    "etapa_grooming": "Enganche emocional/Validación",
+    "nivel_riesgo": 8
+  }
+]
+
