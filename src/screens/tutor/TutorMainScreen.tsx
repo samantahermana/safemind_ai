@@ -35,36 +35,55 @@ const db = SQLite.openDatabase(
 
 const TutorMainScreen = () => {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
-const [modalVisible, setModalVisible] = useState(false);
-const [linkedChildren, setLinkedChildren] = useState<any[]>([]);
-const user = auth().currentUser;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [linkedChildren, setLinkedChildren] = useState<any[]>([]);
+  const [linkedChildrenCount, setLinkedChildrenCount] = useState(0);
+  const user = auth().currentUser;
+
+  // Escuchar hijos vinculados en tiempo real desde linkedChildren
   useEffect(() => {
-    loadNotifications();
+    const currentUser = auth().currentUser;
+    if (!currentUser) return;
+
+    console.log('👨‍👩‍👧 Escuchando hijos vinculados para tutor:', currentUser.uid);
+
+    const unsubscribe = firestore()
+      .collection('linkedChildren')
+      .where('tutorId', '==', currentUser.uid)
+      .where('isActive', '==', true)
+      .onSnapshot(
+        (snapshot) => {
+          const children: any[] = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            children.push({ 
+              id: doc.id, 
+              email: data.childEmail,
+              linkedAt: data.linkedAt,
+              ...data 
+            });
+          });
+          
+          console.log('👶 Hijos activos encontrados:', children.length);
+          setLinkedChildren(children);
+          setLinkedChildrenCount(children.length);
+        },
+        (error) => {
+          console.error('❌ Error al escuchar linkedChildren:', error);
+        }
+      );
+
+    return () => unsubscribe();
   }, []);
 
-  const loadNotifications = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM messages ORDER BY id DESC',
-        [],
-        (_, results) => {
-          let temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
-          }
-          setNotifications(temp);
-        },
-      );
-    });
-  };
+  // Escuchar alertas en tiempo real
   useEffect(() => {
     const user = auth().currentUser;
     if (!user) return;
 
-    // Escuchamos en tiempo real las alertas destinadas a este Tutor
     const unsubscribe = firestore()
       .collection('alerts')
-      .where('tutorId', '==', user.uid) // Solo las mías
+      .where('tutorId', '==', user.uid)
       .onSnapshot(
         querySnapshot => {
           const tempAlerts: NotificationData[] = [];
@@ -88,7 +107,6 @@ const user = auth().currentUser;
               timestampRaw: data.timestamp?.toMillis() || Date.now(),
             });
           });
-          // Ordenar en el cliente por timestamp descendente
           tempAlerts.sort((a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
           setNotifications(tempAlerts);
         },
@@ -97,56 +115,35 @@ const user = auth().currentUser;
         },
       );
 
-    return () => unsubscribe(); // Limpiamos la escucha al salir
+    return () => unsubscribe();
   }, []);
 
+  // Guardar FCM Token
   useEffect(() => {
-  const saveFcmToken = async () => {
-    // 1. Pedir permiso (vital en Android 13+ y iOS)
-    const authStatus = await messaging().requestPermission();
-    const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED;
+    const saveFcmToken = async () => {
+      const authStatus = await messaging().requestPermission();
+      const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED;
 
-    if (enabled) {
-      // 2. Obtener el Token de este dispositivo
-      const token = await messaging().getToken();
-      const uid = auth().currentUser?.uid;
+      if (enabled) {
+        const token = await messaging().getToken();
+        const uid = auth().currentUser?.uid;
 
-      // 3. Guardarlo en Firestore para que el Backend sepa a dónde enviar la notificación
-      if (uid) {
-        await firestore().collection('users').doc(uid).set({
-          fcmToken: token,
-          lastActive: firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+        if (uid) {
+          await firestore().collection('users').doc(uid).set({
+            fcmToken: token,
+            lastActive: firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
       }
-    }
-  };
+    };
 
-  saveFcmToken();
-}, []);
-useEffect(() => {
-  const user = auth().currentUser;
-  if (!user) return;
+    saveFcmToken();
+  }, []);
 
-  const unsubscribe = firestore()
-    .collection('users')
-    .where('role', '==', 'child')
-    .where('tutorId', '==', user.uid)
-    .onSnapshot(querySnapshot => {
-      const children: React.SetStateAction<any[]> = [];
-      querySnapshot.forEach(doc => {
-        children.push({ id: doc.id, ...doc.data() });
-      });
-      setLinkedChildren(children);
-    });
-
-  return () => unsubscribe();
-}, []);
   const renderItem = ({item}: {item: NotificationData}) => {
-    // Definimos los rangos de riesgo
-    const isHighRisk = item.riskLevel >= 7; // 7, 8, 9, 10 -> ROJO
-    const isMediumRisk = item.riskLevel >= 5 && item.riskLevel < 7; // 5, 6 -> AMARILLO
+    const isHighRisk = item.riskLevel >= 7;
+    const isMediumRisk = item.riskLevel >= 5 && item.riskLevel < 7;
 
-    // Formatear el nombre de la app (extraer solo el nombre)
     const formatAppName = (sender: string) => {
       if (sender.includes('com.whatsapp')) return 'WhatsApp';
       if (sender.includes('com.instagram')) return 'Instagram';
@@ -158,7 +155,6 @@ useEffect(() => {
       if (sender.includes('Client)')) return 'Roblox';
       if (sender.includes('com.roblox')) return 'Roblox';
 
-      // Para otros casos, extraer después del último punto
       const parts = sender.split('.');
       return (
         parts[parts.length - 1].charAt(0).toUpperCase() +
@@ -211,75 +207,75 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={styles.container}>
-<View style={styles.header}>
-      <View>
-        <Text style={styles.title}>SafeMind AI</Text>
-        <Text style={styles.subtitle}>● Conectado como Tutor</Text>
-      </View>
-      
-      {/* NUEVO: Contenedor de botones a la derecha */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity 
-          onPress={() => setModalVisible(true)} 
-          style={styles.qrHeaderButton}
-        >
-          <Text style={{ fontSize: 20 }}>📱</Text>
-        </TouchableOpacity>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>SafeMind AI</Text>
+          <Text style={styles.subtitle}>● Conectado como Tutor</Text>
+        </View>
         
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Salir</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-
-    {/* --- MODAL DEL QR --- */}
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Vincular Hijo</Text>
-          <Text style={styles.modalSub}>Escaneá este código desde el celular del menor</Text>
-          
-          <View style={styles.qrWrapper}>
-            {user && (
-              <QRCode value={user.uid} size={200} />
-            )}
-          </View>
-          
-          <Text style={styles.uidText}>ID: {user?.uid.substring(0, 10)}...</Text>
-
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity 
-            style={styles.closeButton} 
-            onPress={() => setModalVisible(false)}
+            onPress={() => setModalVisible(true)} 
+            style={styles.qrHeaderButton}
           >
-            <Text style={styles.closeButtonText}>Cerrar</Text>
+            <Text style={{ fontSize: 20 }}>📱</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Text style={styles.logoutText}>Salir</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </Modal>
-<View style={styles.dashboardContainer}>
-  <View style={styles.statCard}>
-    <Text style={styles.statNumber}>{linkedChildren.length}</Text>
-    <Text style={styles.statLabel}>Hijos Protegidos</Text>
-  </View>
-  
-  <View style={styles.childrenList}>
-    <Text style={styles.listTitle}>Dispositivos Activos:</Text>
-    {linkedChildren.length === 0 ? (
-      <Text style={styles.noChildrenText}>Esperando vinculación...</Text>
-    ) : (
-      linkedChildren.map(child => (
-        <View key={child.id} style={styles.childBadge}>
-          <Text style={styles.childBadgeText}>📱 {child.email?.split('@')[0]}</Text>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Vincular Hijo</Text>
+            <Text style={styles.modalSub}>Escaneá este código desde el celular del menor</Text>
+            
+            <View style={styles.qrWrapper}>
+              {user && (
+                <QRCode value={user.uid} size={200} />
+              )}
+            </View>
+            
+            <Text style={styles.uidText}>ID: {user?.uid.substring(0, 10)}...</Text>
+
+            <TouchableOpacity 
+              style={styles.closeButton} 
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      ))
-    )}
-  </View>
-</View>
+      </Modal>
+
+      <View style={styles.dashboardContainer}>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{linkedChildrenCount}</Text>
+          <Text style={styles.statLabel}>Dispositivos Vinculados</Text>
+        </View>
+        
+        <View style={styles.childrenList}>
+          <Text style={styles.listTitle}>Dispositivos Activos:</Text>
+          {linkedChildren.length === 0 ? (
+            <Text style={styles.noChildrenText}>Esperando vinculación...</Text>
+          ) : (
+            linkedChildren.map(child => (
+              <View key={child.id} style={styles.childBadge}>
+                <Text style={styles.childBadgeText}>📱 {child.email?.split('@')[0] || 'Dispositivo'}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      </View>
+
       <FlatList
         data={notifications}
         keyExtractor={item => item.id.toString()}
@@ -367,7 +363,7 @@ const styles = StyleSheet.create({
   emptyText: {fontSize: 16, color: '#bdc3c7', fontWeight: 'bold'},
   logoutButton: {padding: 8, backgroundColor: '#fee', borderRadius: 5},
   logoutText: {color: '#e74c3c', fontSize: 12, fontWeight: 'bold'},
-qrHeaderButton: {
+  qrHeaderButton: {
     padding: 8,
     backgroundColor: '#f0f0f0',
     borderRadius: 8,

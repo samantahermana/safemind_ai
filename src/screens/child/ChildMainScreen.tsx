@@ -69,7 +69,19 @@ const ChildMainScreen = () => {
           text: 'Desvincular',
           style: 'destructive',
           onPress: async () => {
+            const currentUser = auth().currentUser;
+            
+            // 1. Remover de AsyncStorage
             await AsyncStorage.removeItem('tutorId');
+            
+            // 2. Marcar como inactivo en Firestore
+            if (currentUser) {
+              await firestore()
+                .collection('linkedChildren')
+                .doc(currentUser.uid)
+                .update({ isActive: false });
+            }
+            
             setTutorId(null);
             setShowScanner(false);
             setHasPermission(false);
@@ -151,7 +163,27 @@ const ChildMainScreen = () => {
     
     return <QRScannerView 
       onScanned={async (scannedId) => {
+        console.log('📱 Vinculando con tutor:', scannedId);
+        
+        // 1. Guardar en AsyncStorage (local)
         await AsyncStorage.setItem('tutorId', scannedId);
+        
+        // 2. Guardar en Firestore (sincronizado)
+        const currentUser = auth().currentUser;
+        if (currentUser) {
+          await firestore()
+            .collection('linkedChildren')
+            .doc(currentUser.uid)
+            .set({
+              tutorId: scannedId,
+              childEmail: currentUser.email,
+              linkedAt: firestore.FieldValue.serverTimestamp(),
+              isActive: true,
+            });
+          
+          console.log('✅ Vinculación guardada en Firestore');
+        }
+        
         setTutorId(scannedId);
         setShowScanner(false);
       }}
