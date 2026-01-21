@@ -34,9 +34,14 @@ const ChildMainScreen = () => {
           if (isNoiseMessage(event.message)) return;
           
           const analysis = await analyzeRisk(event.message);
+          
           if (analysis.riskLevel >= 5) {
+            const currentUser = auth().currentUser;
             await firestore().collection('alerts').add({
               tutorId: tutorId,
+              childId: currentUser?.uid || 'unknown',
+              childEmail: currentUser?.email || 'unknown',
+              sender: event.app || event.sender || 'Sistema',
               message: event.message,
               riskLevel: analysis.riskLevel,
               groomingStage: analysis.groomingStage,

@@ -14,6 +14,7 @@ import SQLite from 'react-native-sqlite-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface NotificationData {
   id: number;
@@ -25,6 +26,8 @@ interface NotificationData {
   engine: string;
   groomingStage: string;
   timestampRaw?: number;
+  childId?: string;
+  childEmail?: string;
 }
 
 const db = SQLite.openDatabase(
@@ -38,7 +41,23 @@ const TutorMainScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [linkedChildren, setLinkedChildren] = useState<any[]>([]);
   const [linkedChildrenCount, setLinkedChildrenCount] = useState(0);
+  const [archivedAlerts, setArchivedAlerts] = useState<Set<string>>(new Set());
   const user = auth().currentUser;
+
+  // Cargar alertas archivadas desde AsyncStorage
+  useEffect(() => {
+    const loadArchivedAlerts = async () => {
+      try {
+        const archived = await AsyncStorage.getItem('archivedAlerts');
+        if (archived) {
+          setArchivedAlerts(new Set(JSON.parse(archived)));
+        }
+      } catch (error) {
+        console.error('Error al cargar alertas archivadas:', error);
+      }
+    };
+    loadArchivedAlerts();
+  }, []);
 
   // Escuchar hijos vinculados en tiempo real desde linkedChildren
   useEffect(() => {
@@ -89,6 +108,9 @@ const TutorMainScreen = () => {
           const tempAlerts: NotificationData[] = [];
           querySnapshot.forEach(doc => {
             const data = doc.data();
+            // Filtrar alertas archivadas localmente
+            if (archivedAlerts.has(doc.id)) return;
+            
             tempAlerts.push({
               id: doc.id as any,
               sender: data.sender || 'Sistema',
@@ -96,7 +118,10 @@ const TutorMainScreen = () => {
               timestamp:
                 data.timestamp
                   ?.toDate()
-                  .toLocaleTimeString([], {
+                  .toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                   }) || 'Reciente',
@@ -105,6 +130,8 @@ const TutorMainScreen = () => {
               engine: 'AI-Cloud',
               groomingStage: data.groomingStage || 'Analizando',
               timestampRaw: data.timestamp?.toMillis() || Date.now(),
+              childId: data.childId,
+              childEmail: data.childEmail,
             });
           });
           tempAlerts.sort((a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
@@ -116,7 +143,7 @@ const TutorMainScreen = () => {
       );
 
     return () => unsubscribe();
-  }, []);
+  }, [archivedAlerts]);
 
   // Guardar FCM Token
   useEffect(() => {
@@ -162,6 +189,12 @@ const TutorMainScreen = () => {
       );
     };
 
+    const getChildName = (email: string | undefined) => {
+      if (!email) return 'Desconocido';
+      const name = email.split('@')[0];
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    };
+
     return (
       <View
         style={[
@@ -181,6 +214,12 @@ const TutorMainScreen = () => {
           </Text>
           <Text style={styles.time}>{item.timestamp}</Text>
         </View>
+
+        {item.childEmail && (
+          <View style={styles.childBadgeInAlert}>
+            <Text style={styles.childBadgeInAlertText}>👶 {getChildName(item.childEmail)}</Text>
+          </View>
+        )}
 
         <Text style={[styles.message, isHighRisk && styles.highRiskText]}>
           {item.message}
@@ -205,6 +244,51 @@ const TutorMainScreen = () => {
       .then(() => Alert.alert('Sesión cerrada'));
   };
 
+  const handleClearAlerts = async () => {
+    Alert.alert(
+      'Archivar Alertas',
+      '¿Deseas archivar todas las alertas visibles? (Se mantendrán como evidencia en Firestore)',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Archivar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const user = auth().currentUser;
+              if (!user) return;
+
+              // Obtener IDs de todas las alertas actuales
+              const alertIds = notifications.map(alert => alert.id.toString());
+              
+              // Actualizar en Firestore
+              const batch = firestore().batch();
+              alertIds.forEach(alertId => {
+                const alertRef = firestore().collection('alerts').doc(alertId);
+                batch.update(alertRef, { 
+                  archived: true, 
+                  archivedAt: firestore.FieldValue.serverTimestamp() 
+                });
+              });
+              
+              await batch.commit();
+              
+              // Actualizar AsyncStorage local
+              const newArchivedSet = new Set([...Array.from(archivedAlerts), ...alertIds]);
+              await AsyncStorage.setItem('archivedAlerts', JSON.stringify(Array.from(newArchivedSet)));
+              setArchivedAlerts(newArchivedSet);
+              
+              Alert.alert('Éxito', `${alertIds.length} alertas archivadas (evidencia preservada en Firebase)`);
+            } catch (error) {
+              console.error('Error al archivar alertas:', error);
+              Alert.alert('Error', 'No se pudieron archivar las alertas');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -219,6 +303,10 @@ const TutorMainScreen = () => {
             style={styles.qrHeaderButton}
           >
             <Text style={{ fontSize: 20 }}>📱</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={handleClearAlerts} style={styles.clearButton}>
+            <Text style={styles.clearButtonText}>🗑️</Text>
           </TouchableOpacity>
           
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
@@ -363,6 +451,15 @@ const styles = StyleSheet.create({
   emptyText: {fontSize: 16, color: '#bdc3c7', fontWeight: 'bold'},
   logoutButton: {padding: 8, backgroundColor: '#fee', borderRadius: 5},
   logoutText: {color: '#e74c3c', fontSize: 12, fontWeight: 'bold'},
+  clearButton: {
+    padding: 8,
+    backgroundColor: '#fff3e0',
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  clearButtonText: {
+    fontSize: 18,
+  },
   qrHeaderButton: {
     padding: 8,
     backgroundColor: '#f0f0f0',
@@ -422,6 +519,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   childBadgeText: { fontSize: 11, color: '#3498db', fontWeight: 'bold' },
+  childBadgeInAlert: {
+    backgroundColor: '#e8f5e9',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#81c784',
+  },
+  childBadgeInAlertText: { 
+    fontSize: 11, 
+    color: '#2e7d32', 
+    fontWeight: 'bold' 
+  },
   noChildrenText: { fontSize: 11, color: '#bdc3c7', fontStyle: 'italic' },
 });
 

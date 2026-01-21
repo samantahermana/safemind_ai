@@ -23,29 +23,31 @@ const RoleSelectionScreen = ({ onRoleSelected }: RoleSelectionScreenProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SafeMind AI</Text>
-      <Text style={styles.subtitle}>Selecciona tu rol para comenzar</Text>
+      <Text style={styles.subtitle}>Completa tu perfil</Text>
+      <Text style={styles.description}>Selecciona tu rol para continuar usando la aplicación</Text>
 
       <TouchableOpacity 
         style={[styles.button, styles.tutorButton]} 
         onPress={() => saveRole('tutor')}
       >
-        <Text style={styles.buttonText}>Soy el Tutor (Padre/Madre)</Text>
+        <Text style={styles.buttonText}>👨‍👩‍👧 Soy el Tutor (Padre/Madre)</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
         style={[styles.button, styles.childButton]} 
         onPress={() => saveRole('child')}
       >
-        <Text style={styles.buttonText}>Soy el Menor (Hijo/a)</Text>
+        <Text style={styles.buttonText}>👶 Soy el Menor (Hijo/a)</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 20 },
   title: { fontSize: 32, fontWeight: 'bold', color: '#2c3e50', marginBottom: 10 },
-  subtitle: { fontSize: 18, color: '#7f8c8d', marginBottom: 40 },
+  subtitle: { fontSize: 20, color: '#34495e', marginBottom: 10, fontWeight: '600' },
+  description: { fontSize: 16, color: '#7f8c8d', marginBottom: 40, textAlign: 'center' },
   button: { width: '80%', padding: 20, borderRadius: 12, marginVertical: 10, alignItems: 'center' },
   tutorButton: { backgroundColor: '#3498db' },
   childButton: { backgroundColor: '#2ecc71' },

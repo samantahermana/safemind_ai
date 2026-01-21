@@ -17,7 +17,17 @@ const App = () => {
       setUser(userState);
       if (userState) {
         const doc = await firestore().collection('users').doc(userState.uid).get();
-        if (doc.exists) setRole(doc.data()?.role || null);
+        if (doc.exists) {
+          const userData = doc.data();
+          setRole(userData?.role || null);
+        } else {
+          // Si el usuario existe pero no tiene documento en Firestore, 
+          // puede ser un caso excepcional, mantener role como null
+          setRole(null);
+        }
+      } else {
+        // Si no hay usuario, resetear el rol
+        setRole(null);
       }
       setInitializing(false);
     });
