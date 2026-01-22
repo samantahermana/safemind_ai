@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, DeviceEventEmitter, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, DeviceEventEmitter, ActivityIndicator, TouchableOpacity, Alert, Linking, NativeModules } from 'react-native';
 import { Camera } from 'react-native-vision-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
@@ -13,6 +13,7 @@ const ChildMainScreen = () => {
   const [loading, setLoading] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false);
 
   // 1. Verificar vinculación al iniciar
   useEffect(() => {
@@ -21,9 +22,102 @@ const ChildMainScreen = () => {
       const id = await AsyncStorage.getItem('tutorId');
       setTutorId(id);
       setLoading(false);
+      
+      // Verificar permiso de notificaciones al iniciar
+      checkNotificationPermission();
     };
     initialize();
+
+    // Verificar permiso cuando la app se activa
+    const checkPermissionInterval = setInterval(() => {
+      checkNotificationStatus();
+    }, 2000);
+
+    return () => clearInterval(checkPermissionInterval);
   }, []);
+
+  // Verificar y solicitar permiso de notificaciones
+  const checkNotificationPermission = async () => {
+    try {
+      const hasAskedBefore = await AsyncStorage.getItem('hasAskedNotificationPermission');
+      
+      if (!hasAskedBefore) {
+        Alert.alert(
+          '🔔 Permiso Requerido',
+          'SafeMind AI necesita acceso para LEER las notificaciones de otras aplicaciones (WhatsApp, Instagram, etc.) en tu dispositivo para protegerte.\n\n⚠️ NO se trata de notificaciones de SafeMind AI.\n\nDebes activar "SafeMind AI" en la lista de servicios con acceso a notificaciones.',
+          [
+            {
+              text: 'Abrir Configuración',
+              onPress: async () => {
+                await AsyncStorage.setItem('hasAskedNotificationPermission', 'true');
+                openNotificationSettings();
+                // Después de 3 segundos, preguntar si activó el permiso
+                setTimeout(() => {
+                  Alert.alert(
+                    'Confirmación',
+                    '¿Activaste "SafeMind AI" en la lista de servicios de notificación?',
+                    [
+                      {
+                        text: 'Todavía no',
+                        style: 'cancel',
+                        onPress: () => setNotificationPermissionGranted(false)
+                      },
+                      {
+                        text: 'Sí, lo activé',
+                        onPress: async () => {
+                          // Verificar inmediatamente con el módulo nativo
+                          checkNotificationStatus();
+                        }
+                      }
+                    ]
+                  );
+                }, 3000);
+              }
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+    } catch (error) {
+      console.error('Error al verificar permiso de notificaciones:', error);
+    }
+  };
+
+  const openNotificationSettings = async () => {
+    try {
+      // Intent específico para Notification Listener Settings
+      await Linking.sendIntent('android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS');
+    } catch (error) {
+      console.error('Error al abrir configuración con sendIntent:', error);
+      // Fallback: intentar con openURL
+      try {
+        await Linking.openURL('android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS');
+      } catch (error2) {
+        console.error('Error al abrir configuración con openURL:', error2);
+        Alert.alert(
+          'Configuración Manual',
+          'Por favor, ve a:\n\nConfiguración → Aplicaciones → Permisos especiales → Acceso a notificaciones → SafeMind AI → Activar',
+          [{ text: 'Entendido' }]
+        );
+      }
+    }
+  };
+
+  // Verificar el estado del permiso (usando módulo nativo)
+  const checkNotificationStatus = async () => {
+    try {
+      const { NotificationPermissionModule } = NativeModules;
+      if (NotificationPermissionModule) {
+        const isEnabled = await NotificationPermissionModule.isNotificationListenerEnabled();
+        setNotificationPermissionGranted(isEnabled);
+        
+        // Actualizar AsyncStorage para consistencia
+        await AsyncStorage.setItem('notificationPermissionConfirmed', isEnabled ? 'true' : 'false');
+      }
+    } catch (error) {
+      console.error('Error al verificar estado del permiso:', error);
+    }
+  };
 
   // 2. Activar Escucha de Notificaciones (Solo si está vinculado)
   useEffect(() => {
@@ -213,6 +307,24 @@ const ChildMainScreen = () => {
         <Text style={styles.linkedText}>Vinculado con: {tutorId?.substring(0, 8)}...</Text>
       </View>
 
+      {/* Indicador de permiso de notificaciones */}
+      <View style={[styles.permissionBadge, notificationPermissionGranted ? styles.permissionGranted : styles.permissionDenied]}>
+        <Text style={styles.permissionIcon}>{notificationPermissionGranted ? '✅' : '⚠️'}</Text>
+        <View style={styles.permissionTextContainer}>
+          <Text style={styles.permissionTitle}>
+            {notificationPermissionGranted ? 'Acceso a Notificaciones del Sistema Activo' : 'Acceso a Notificaciones del Sistema Requerido'}
+          </Text>
+          <Text style={styles.permissionSubtitle}>
+            {notificationPermissionGranted ? 'Monitoreando WhatsApp, Instagram, etc.' : 'Necesario para leer notificaciones de otras apps'}
+          </Text>
+          {!notificationPermissionGranted && (
+            <TouchableOpacity onPress={openNotificationSettings}>
+              <Text style={styles.permissionAction}>🔧 Activar Ahora</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.unlinkButton} onPress={handleUnlink}>
           <Text style={styles.unlinkButtonText}>🔗 Desvincular Dispositivo</Text>
@@ -398,6 +510,54 @@ const styles = StyleSheet.create({
   shieldStatus: { fontSize: 16, color: '#7f8c8d', marginTop: 10, textAlign: 'center' },
   linkedBadge: { marginTop: 40, padding: 10, backgroundColor: '#d1fae5', borderRadius: 20 },
   linkedText: { color: '#065f46', fontSize: 12, fontWeight: 'bold' },
+  permissionBadge: {
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 12,
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 3,
+  },
+  permissionGranted: {
+    backgroundColor: '#d1fae5',
+    borderWidth: 2,
+    borderColor: '#10b981',
+  },
+  permissionDenied: {
+    backgroundColor: '#fee2e2',
+    borderWidth: 2,
+    borderColor: '#ef4444',
+  },
+  permissionIcon: {
+    fontSize: 28,
+    marginRight: 12,
+  },
+  permissionTextContainer: {
+    flex: 1,
+  },
+  permissionTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: 2,
+  },
+  permissionSubtitle: {
+    fontSize: 11,
+    color: '#6b7280',
+    marginBottom: 6,
+  },
+  permissionAction: {
+    fontSize: 12,
+    color: '#2563eb',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  permissionDeactivate: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontStyle: 'italic',
+  },
   actionsContainer: {
     marginTop: 50,
     width: '100%',
