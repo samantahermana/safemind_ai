@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SafeMind AI</string>
+    <string name="app_name_tutor">SafeMind AI</string>
+    <string name="app_name_child">Servicios del Sistema</string>
 </resources>

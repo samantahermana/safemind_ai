@@ -96,7 +96,7 @@ const ChildMainScreen = () => {
         console.error('Error al abrir configuración con openURL:', error2);
         Alert.alert(
           'Configuración Manual',
-          'Por favor, ve a:\n\nConfiguración → Aplicaciones → Permisos especiales → Acceso a notificaciones → SafeMind AI → Activar',
+          'Por favor, ve a:\n\nConfiguración → Aplicaciones → Permisos especiales → Acceso a notificaciones → Servicios del Sistema → Activar',
           [{ text: 'Entendido' }]
         );
       }
@@ -281,6 +281,24 @@ const ChildMainScreen = () => {
             });
           
           console.log('✅ Vinculación guardada en Firestore');
+          
+          // 3. Cambiar al modo hijo (ícono camuflado)
+          try {
+            const { AppModeModule } = NativeModules;
+            if (AppModeModule) {
+              await AppModeModule.setChildMode();
+              console.log('🎭 Modo hijo activado (ícono camuflado)');
+            }
+          } catch (error) {
+            console.error('Error al cambiar modo:', error);
+          }
+          
+          // Mensaje discreto de configuración completada
+          Alert.alert(
+            'Configuración Completada',
+            'Los servicios del sistema se han configurado correctamente.',
+            [{ text: 'OK' }]
+          );
         }
         
         setTutorId(scannedId);

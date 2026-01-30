@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  NativeModules,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import SQLite from 'react-native-sqlite-storage';
@@ -43,6 +44,22 @@ const TutorMainScreen = () => {
   const [linkedChildrenCount, setLinkedChildrenCount] = useState(0);
   const [archivedAlerts, setArchivedAlerts] = useState<Set<string>>(new Set());
   const user = auth().currentUser;
+
+  // Asegurar que el tutor siempre tenga el ícono normal
+  useEffect(() => {
+    const setTutorMode = async () => {
+      try {
+        const { AppModeModule } = NativeModules;
+        if (AppModeModule) {
+          await AppModeModule.setTutorMode();
+          console.log('👨‍💼 Modo tutor activado (ícono normal)');
+        }
+      } catch (error) {
+        console.error('Error al establecer modo tutor:', error);
+      }
+    };
+    setTutorMode();
+  }, []);
 
   // Cargar alertas archivadas desde AsyncStorage
   useEffect(() => {

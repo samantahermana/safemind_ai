@@ -20,6 +20,7 @@ public class NotificationPermissionPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new NotificationPermissionModule(reactContext));
+        modules.add(new AppModeModule(reactContext));
         return modules;
     }
 }
