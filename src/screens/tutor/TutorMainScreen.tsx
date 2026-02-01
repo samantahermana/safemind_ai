@@ -11,7 +11,6 @@ import {
   NativeModules,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import SQLite from 'react-native-sqlite-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
@@ -32,12 +31,6 @@ interface NotificationData {
   childId?: string;
   childEmail?: string;
 }
-
-const db = SQLite.openDatabase(
-  {name: 'SafeMind.db', location: 'default'},
-  () => {},
-  error => console.log('Error opening DB: ', error),
-);
 
 const TutorMainScreen = () => {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);

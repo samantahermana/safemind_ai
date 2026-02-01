@@ -1,5 +1,5 @@
-import { HIGH_RISK_KEYWORDS, SUSPICIOUS_PATTERNS } from './utils/const';
-import dataset from '../dataset.json';
+import { HIGH_RISK_KEYWORDS, SUSPICIOUS_PATTERNS } from '../utils/const';
+import dataset from './dataset.json';
 import wordIndex from './word_index.json';
 import stringSimilarity from 'string-similarity';
 

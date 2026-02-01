@@ -4,7 +4,7 @@ import { Camera } from 'react-native-vision-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { analyzeRisk } from '../../AnalyzerAI';
+import { analyzeRisk } from '../../ai/AnalyzerAI';
 import { isNoiseMessage } from '../../utils/filters';
 import { requestCameraPermission, checkCameraPermission } from '../../utils/permissions';
 
