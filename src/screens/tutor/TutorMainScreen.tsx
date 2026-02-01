@@ -20,7 +20,8 @@ import notifee, { AndroidImportance } from '@notifee/react-native';
 
 interface NotificationData {
   id: number;
-  sender: string;
+  sender?: string;
+  appName?: string;
   message: string;
   timestamp: string;
   isAnomalous: number;
@@ -202,21 +203,17 @@ const TutorMainScreen = () => {
       .where('tutorId', '==', user.uid)
       .onSnapshot(
         querySnapshot => {
-          console.log(`📬 Alertas recibidas: ${querySnapshot.size} total`);
           const tempAlerts: NotificationData[] = [];
           querySnapshot.forEach(doc => {
             const data = doc.data();
             // Filtrar alertas archivadas localmente
             if (archivedAlerts.has(doc.id)) {
-              console.log(`📦 Alerta ${doc.id} está archivada, omitiendo`);
               return;
             }
             
-            console.log(`📨 Procesando alerta ${doc.id}:`, data);
-            
             tempAlerts.push({
               id: doc.id as any,
-              sender: data.sender || 'Sistema',
+              appName: data.appName,
               message: data.message,
               timestamp:
                 data.timestamp
@@ -238,7 +235,6 @@ const TutorMainScreen = () => {
             });
           });
           tempAlerts.sort((a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
-          console.log(`✅ Total alertas activas: ${tempAlerts.length}`);
           setNotifications(tempAlerts);
         },
         error => {
@@ -275,18 +271,20 @@ const TutorMainScreen = () => {
     const isHighRisk = item.riskLevel >= 7;
     const isMediumRisk = item.riskLevel >= 5 && item.riskLevel < 7;
 
-    const formatAppName = (sender: string) => {
-      if (sender.includes('com.whatsapp')) return 'WhatsApp';
-      if (sender.includes('com.instagram')) return 'Instagram';
-      if (sender.includes('com.facebook')) return 'Facebook';
-      if (sender.includes('com.snapchat')) return 'Snapchat';
-      if (sender.includes('com.tiktok')) return 'TikTok';
-      if (sender.includes('Musically')) return 'TikTok';
-      if (sender.includes('com.telegram')) return 'Telegram';
-      if (sender.includes('Client)')) return 'Roblox';
-      if (sender.includes('com.roblox')) return 'Roblox';
-
-      const parts = sender.split('.');
+    const formatAppName = (appName: string | undefined) => {
+      if (!appName) return 'Sistema';
+      
+      if (appName.includes('com.whatsapp')) return 'WhatsApp';
+      if (appName.includes('com.instagram')) return 'Instagram';
+      if (appName.includes('com.facebook')) return 'Facebook';
+      if (appName.includes('com.snapchat')) return 'Snapchat';
+      if (appName.includes('com.tiktok')) return 'TikTok';
+      if (appName.includes('Musically')) return 'TikTok';
+      if (appName.includes('com.telegram')) return 'Telegram';
+      if (appName.includes('com.roblox')) return 'Roblox';
+      if (appName.includes('roblox')) return 'Roblox';
+      
+      const parts = appName.split('.');
       return (
         parts[parts.length - 1].charAt(0).toUpperCase() +
         parts[parts.length - 1].slice(1)
@@ -314,7 +312,7 @@ const TutorMainScreen = () => {
               isMediumRisk && styles.mediumRiskText,
             ]}>
             {isHighRisk ? '🚨 ' : '⚠️ '}
-            {formatAppName(item.sender)}
+            {formatAppName(item.appName ? item.appName : item.sender)}
           </Text>
           <Text style={styles.time}>{item.timestamp}</Text>
         </View>

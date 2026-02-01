@@ -39,7 +39,7 @@ export const sendriskalert = onDocumentCreated("alerts/{alertId}", async (event)
       }
 
       // Construir mensaje detallado
-      let body = `${childName}: ${sender} - Nivel ${riskLevel}/10`;
+      let body = `${childName} - Nivel ${riskLevel}/10`;
       if (groomingStage) {
         body += ` (${groomingStage})`;
       }
