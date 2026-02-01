@@ -1,40 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Camera, CameraDevice } from 'react-native-vision-camera';
-import { requestCameraPermission, checkCameraPermission } from '../../utils/permissions';
+import { Camera } from 'react-native-vision-camera';
+import { useCameraPermission } from '../../hooks/useCameraPermission';
+import { useCamera } from '../../hooks/useCamera';
+import { ErrorView } from '../../components/ErrorView';
 
 const ChildScannerScreen = () => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    console.log('🔵 Iniciando verificación de permisos...');
-    async function getPermission() {
-      // Primero verifica si ya tiene permiso
-      const hasIt = await checkCameraPermission();
-      console.log('🟡 Permiso actual:', hasIt);
-      
-      if (!hasIt) {
-        // Si no, solicítalo
-        const permission = await requestCameraPermission();
-        console.log('🟢 Permiso solicitado:', permission);
-        setHasPermission(permission);
-      } else {
-        setHasPermission(true);
-      }
-    }
-    getPermission();
-  }, []);
-
-  const handleRetry = async () => {
-    console.log('🔄 Reintentando...');
-    setHasPermission(null);
-    const permission = await requestCameraPermission();
-    console.log('🟢 Permiso obtenido (retry):', permission);
-    setHasPermission(permission);
-  };
+  const { hasPermission, isChecking, retry } = useCameraPermission();
 
   // Mientras verifica permisos
-  if (hasPermission === null) {
+  if (isChecking || hasPermission === null) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -47,55 +22,48 @@ const ChildScannerScreen = () => {
   if (!hasPermission) {
     return (
       <View style={styles.container}>
+        <Text style={styles.icon}>🔒</Text>
         <Text style={styles.text}>Permiso de cámara denegado</Text>
-        <Text style={styles.subtext}>SafeMind necesita acceso a la cámara para escanear códigos QR</Text>
-        <TouchableOpacity style={styles.button} onPress={handleRetry}>
+        <Text style={styles.subtext}>
+          SafeMind necesita acceso a la cámara para escanear códigos QR
+        </Text>
+        <TouchableOpacity style={styles.button} onPress={retry}>
           <Text style={styles.buttonText}>Solicitar permiso nuevamente</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  // Solo cuando hasPermission === true
-  console.log('✅ Renderizando CameraView');
+  // Cuando tiene permiso, renderiza la cámara
   return <CameraView />;
 };
 
-// Este componente SOLO se monta cuando hasPermission es true
+// Componente de cámara con hooks limpios
 const CameraView = () => {
-  const [device, setDevice] = useState<CameraDevice | null>(null);
-  const [isActive, setIsActive] = useState(false);
+  const {
+    device,
+    isActive,
+    error,
+    scannedCode,
+    isLoading,
+    handleCodeScanned,
+    retry,
+  } = useCamera({
+    onCodeScanned: (code) => {
+      // Aquí procesas el código QR
+      console.log('✅ Código procesado:', code);
+      // TODO: Navegar o vincular con tutor
+    },
+    resetDelay: 2000, // Tiempo antes de poder escanear otro QR
+  });
 
-  useEffect(() => {
-    console.log('📷 Inicializando cámara...');
-    async function setupCamera() {
-      try {
-        // Verifica permiso una vez más antes de acceder a la cámara
-        const hasPermission = await checkCameraPermission();
-        console.log('📷 Verificación final de permiso:', hasPermission);
-        
-        if (!hasPermission) {
-          console.log('❌ No hay permiso para acceder a la cámara');
-          return;
-        }
+  // Si hay error, mostrar ErrorView
+  if (error) {
+    return <ErrorView error={error} onRetry={retry} />;
+  }
 
-        const devices = await Camera.getAvailableCameraDevices();
-        console.log('📷 Dispositivos encontrados:', devices.length);
-        const backCamera = devices.find((d) => d.position === 'back');
-        console.log('📷 Back camera:', backCamera ? 'Encontrada' : 'No encontrada');
-        
-        if (backCamera) {
-          setDevice(backCamera);
-          setIsActive(true);
-        }
-      } catch (error) {
-        console.error('❌ Error al inicializar cámara:', error);
-      }
-    }
-    setupCamera();
-  }, []);
-
-  if (!device) {
+  // Mientras carga la cámara
+  if (isLoading || !device) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -111,18 +79,27 @@ const CameraView = () => {
         device={device}
         isActive={isActive}
         codeScanner={{
-          codeTypes: ['qr', 'ean-13'],
-          onCodeScanned: (codes) => {
-            if (codes.length > 0 && isActive) {
-              console.log('📱 QR escaneado:', codes[0].value);
-              setIsActive(false);
-              // Aquí procesas el código QR
-            }
-          },
+          codeTypes: ['qr'],
+          onCodeScanned: handleCodeScanned,
         }}
       />
       <View style={styles.overlay}>
-        <Text style={styles.overlayText}>Escanea el código QR del tutor</Text>
+        <View style={[
+          styles.overlayContent,
+          scannedCode ? styles.overlaySuccess : null
+        ]}>
+          <Text style={styles.overlayText}>
+            {scannedCode ? '✅ Código escaneado!' : '📱 Escanea el código QR del tutor'}
+          </Text>
+        </View>
+      </View>
+      
+      {/* Marcador de escaneo */}
+      <View style={styles.scanFrame}>
+        <View style={[styles.corner, styles.topLeft]} />
+        <View style={[styles.corner, styles.topRight]} />
+        <View style={[styles.corner, styles.bottomLeft]} />
+        <View style={[styles.corner, styles.bottomRight]} />
       </View>
     </View>
   );
@@ -134,6 +111,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#000',
+  },
+  icon: {
+    fontSize: 64,
+    marginBottom: 20,
   },
   text: {
     fontSize: 18,
@@ -167,12 +148,57 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+  },
+  overlayContent: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  overlaySuccess: {
+    backgroundColor: 'rgba(0, 122, 255, 0.8)',
   },
   overlayText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+    fontWeight: '500',
+  },
+  scanFrame: {
+    position: 'absolute',
+    width: 250,
+    height: 250,
+  },
+  corner: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    borderColor: '#007AFF',
+  },
+  topLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
+  },
+  topRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 4,
+    borderRightWidth: 4,
+  },
+  bottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
+  },
+  bottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
   },
 });
 
