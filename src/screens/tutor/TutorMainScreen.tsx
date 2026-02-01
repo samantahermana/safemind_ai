@@ -16,6 +16,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 interface NotificationData {
   id: number;
@@ -59,6 +60,83 @@ const TutorMainScreen = () => {
       }
     };
     setTutorMode();
+  }, []);
+
+  // Solicitar permiso y guardar FCM token para notificaciones push
+  useEffect(() => {
+    console.log('🚀 Iniciando configuración de notificaciones push...');
+    
+    const setupNotifications = async () => {
+      try {
+        const currentUser = auth().currentUser;
+        console.log('👤 Usuario actual:', currentUser?.uid);
+        
+        if (!currentUser) {
+          console.log('❌ No hay usuario autenticado');
+          return;
+        }
+
+        const authStatus = await messaging().requestPermission();
+        
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+          const token = await messaging().getToken();
+          await firestore()
+            .collection('users')
+            .doc(currentUser.uid)
+            .set(
+              { fcmToken: token, lastTokenUpdate: firestore.FieldValue.serverTimestamp() },
+              { merge: true }
+            );
+        }
+      } catch (error) {
+        console.error('Error al configurar notificaciones:', error);
+      }
+    };
+
+    setupNotifications();
+
+    // Listener para notificaciones en primer plano
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      if (remoteMessage.data) {
+        const channelId = await notifee.createChannel({
+          id: 'high_importance_channel',
+          name: 'Alertas de SafeMind AI',
+          importance: AndroidImportance.HIGH,
+          sound: 'default',
+          vibration: true,
+        });
+
+        await notifee.displayNotification({
+          title: typeof remoteMessage.data.title === 'string' ? remoteMessage.data.title : String(remoteMessage.data.title || ''),
+          body: typeof remoteMessage.data.body === 'string' ? remoteMessage.data.body : String(remoteMessage.data.body || ''),
+          android: {
+            channelId,
+            importance: AndroidImportance.HIGH,
+            pressAction: {
+              id: 'default',
+              launchActivity: 'com.safemindai.MainActivity',
+            },
+            autoCancel: true,
+            sound: 'default',
+            vibrationPattern: [300, 500],
+          },
+        });
+      }
+    });
+
+    // Handler para eventos de notificaciones cuando la app está en foreground
+    const unsubscribeNotifeeEvents = notifee.onForegroundEvent(({ type, detail }) => {
+      // Manejar eventos de notificaciones
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeNotifeeEvents();
+    };
   }, []);
 
   // Cargar alertas archivadas desde AsyncStorage
@@ -117,16 +195,24 @@ const TutorMainScreen = () => {
     const user = auth().currentUser;
     if (!user) return;
 
+    console.log('🔔 Iniciando listener de alertas para tutor:', user.uid);
+
     const unsubscribe = firestore()
       .collection('alerts')
       .where('tutorId', '==', user.uid)
       .onSnapshot(
         querySnapshot => {
+          console.log(`📬 Alertas recibidas: ${querySnapshot.size} total`);
           const tempAlerts: NotificationData[] = [];
           querySnapshot.forEach(doc => {
             const data = doc.data();
             // Filtrar alertas archivadas localmente
-            if (archivedAlerts.has(doc.id)) return;
+            if (archivedAlerts.has(doc.id)) {
+              console.log(`📦 Alerta ${doc.id} está archivada, omitiendo`);
+              return;
+            }
+            
+            console.log(`📨 Procesando alerta ${doc.id}:`, data);
             
             tempAlerts.push({
               id: doc.id as any,
@@ -152,10 +238,11 @@ const TutorMainScreen = () => {
             });
           });
           tempAlerts.sort((a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+          console.log(`✅ Total alertas activas: ${tempAlerts.length}`);
           setNotifications(tempAlerts);
         },
         error => {
-          console.error('Error al leer alertas de Firestore: ', error);
+          console.error('❌ Error al leer alertas de Firestore:', error);
         },
       );
 

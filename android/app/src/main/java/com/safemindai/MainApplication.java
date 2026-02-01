@@ -1,6 +1,9 @@
 package com.safemindai;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -58,6 +61,24 @@ public class MainApplication extends Application implements ReactApplication {
     if (false) { // Should be BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       DefaultNewArchitectureEntryPoint.load();
+    }
+    
+    // Crear canal de notificaciones de alta prioridad para alertas
+    createNotificationChannel();
+  }
+  
+  private void createNotificationChannel() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      CharSequence name = "Alertas de Riesgo";
+      String description = "Notificaciones de alertas de grooming y riesgo";
+      int importance = NotificationManager.IMPORTANCE_HIGH;
+      NotificationChannel channel = new NotificationChannel("high_importance_channel", name, importance);
+      channel.setDescription(description);
+      channel.enableVibration(true);
+      channel.enableLights(true);
+      
+      NotificationManager notificationManager = getSystemService(NotificationManager.class);
+      notificationManager.createNotificationChannel(channel);
     }
   }
 }

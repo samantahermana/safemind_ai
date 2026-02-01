@@ -122,15 +122,25 @@ const ChildMainScreen = () => {
   // 2. Activar Escucha de Notificaciones (Solo si está vinculado)
   useEffect(() => {
     if (tutorId) {
+      console.log('👂 Iniciando listener de notificaciones...');
       const subscription = DeviceEventEmitter.addListener(
         'onNotificationReceived',
         async (event) => {
-          if (isNoiseMessage(event.message)) return;
+          console.log('📩 Notificación capturada:', event);
           
+          if (isNoiseMessage(event.message)) {
+            console.log('🗑️ Mensaje de ruido descartado');
+            return;
+          }
+          
+          console.log('🔍 Analizando riesgo...');
           const analysis = await analyzeRisk(event.message);
+          console.log('📊 Análisis completado:', analysis);
           
           if (analysis.riskLevel >= 5) {
             const currentUser = auth().currentUser;
+            console.log('⚠️ Creando alerta en Firestore...');
+            
             await firestore().collection('alerts').add({
               tutorId: tutorId,
               childId: currentUser?.uid || 'unknown',
@@ -141,6 +151,10 @@ const ChildMainScreen = () => {
               groomingStage: analysis.groomingStage,
               timestamp: firestore.FieldValue.serverTimestamp(),
             });
+            
+            console.log('✅ Alerta creada exitosamente');
+          } else {
+            console.log(`ℹ️ Riesgo bajo (${analysis.riskLevel}), no se crea alerta`);
           }
         }
       );
