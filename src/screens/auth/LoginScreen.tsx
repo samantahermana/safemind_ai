@@ -89,7 +89,7 @@ const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
               onPress={() => setSelectedRole('tutor')}
             >
               <Text style={[styles.roleButtonText, selectedRole === 'tutor' && styles.roleButtonTextActive]}>
-                👨‍👩‍👧 Tutor
+                Tutor
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -97,7 +97,7 @@ const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
               onPress={() => setSelectedRole('child')}
             >
               <Text style={[styles.roleButtonText, selectedRole === 'child' && styles.roleButtonTextActive]}>
-                👶 Hijo/a
+                Hijo/a
               </Text>
             </TouchableOpacity>
           </View>

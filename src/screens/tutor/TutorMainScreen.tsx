@@ -172,7 +172,7 @@ const TutorMainScreen = () => {
             });
           });
           
-          console.log('👶 Hijos activos encontrados:', children.length);
+          console.log('Hijos activos encontrados:', children.length);
           setLinkedChildren(children);
           setLinkedChildrenCount(children.length);
         },
@@ -312,7 +312,7 @@ const TutorMainScreen = () => {
 
         {item.childEmail && (
           <View style={styles.childBadgeInAlert}>
-            <Text style={styles.childBadgeInAlertText}>👶 {getChildName(item.childEmail)}</Text>
+            <Text style={styles.childBadgeInAlertText}>{getChildName(item.childEmail)}</Text>
           </View>
         )}
 

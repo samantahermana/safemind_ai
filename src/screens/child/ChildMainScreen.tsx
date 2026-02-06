@@ -18,7 +18,7 @@ const ChildMainScreen = () => {
   // 1. Verificar vinculación al iniciar
   useEffect(() => {
     const initialize = async () => {
-      console.log('👶 Inicializando ChildMainScreen...');
+      console.log('Inicializando ChildMainScreen...');
       const id = await AsyncStorage.getItem('tutorId');
       setTutorId(id);
       setLoading(false);
@@ -164,9 +164,9 @@ const ChildMainScreen = () => {
   }, [tutorId]);
 
   const handleStartScanning = async () => {
-    console.log('👶 Iniciando escaneo...');
+    console.log('Iniciando escaneo...');
     const permission = await requestCameraPermission();
-    console.log('👶 Permiso obtenido:', permission);
+    console.log('Permiso obtenido:', permission);
     setHasPermission(permission);
     if (permission) {
       setShowScanner(true);
@@ -237,7 +237,6 @@ const ChildMainScreen = () => {
         </TouchableOpacity>
 
         <View style={styles.welcomeContent}>
-          <Text style={styles.welcomeEmoji}>👶</Text>
           <Text style={styles.welcomeTitle}>¡Bienvenido a SafeMind AI!</Text>
           <Text style={styles.welcomeSubtitle}>
             Para activar la protección, necesitas vincular este dispositivo con tu tutor
