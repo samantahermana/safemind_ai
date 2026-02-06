@@ -8,19 +8,17 @@
     <application
       android:name=".MainApplication"
       android:label="@string/app_name_tutor"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
+      android:icon="@drawable/ic_launcher_safemind"
+      android:roundIcon="@drawable/ic_launcher_safemind"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="true">
       
-      <!-- Excluir InitializationProvider problemático -->
       <provider
         android:name="androidx.startup.InitializationProvider"
         android:authorities="${applicationId}.androidx-startup"
         tools:node="remove" />
       
-      <!-- Actividad principal (sin ícono directo en launcher) -->
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name_tutor"
@@ -30,13 +28,12 @@
         android:exported="true">
       </activity>
 
-      <!-- Alias para modo TUTOR (normal, con ícono y nombre de SafeMind AI) -->
       <activity-alias
         android:name=".TutorLauncher"
         android:targetActivity=".MainActivity"
         android:label="@string/app_name_tutor"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/ic_launcher_safemind"
+        android:roundIcon="@drawable/ic_launcher_safemind"
         android:enabled="true"
         android:exported="true">
         <intent-filter>
@@ -45,7 +42,6 @@
         </intent-filter>
       </activity-alias>
 
-      <!-- Alias para modo HIJO (camuflado como servicio del sistema) -->
       <activity-alias
         android:name=".ChildLauncher"
         android:targetActivity=".MainActivity"
