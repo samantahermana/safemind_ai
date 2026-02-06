@@ -135,6 +135,36 @@
   },
   {
     "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Mandame un fotito nomás",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Dale mandame fotitos",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Un videito corto, dale",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Pasame videitos que borro después",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Mandame un mensajito con foto",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
     "variacion_sintetica": "Confía, mandame una foto nomás",
     "etapa_grooming": "Solicitud de material sensible",
     "nivel_riesgo": 8
@@ -242,6 +272,74 @@
     "etapa_grooming": "Coerción/Extorsión",
     "nivel_riesgo": 10
   },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No le vayas a decir a nadie xq sabes todo lo que tengo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "No le digas a nadie porque ya sabes lo que tengo tuyo",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+  {
+    "frase_semilla": "Si me bloqueás, voy a publicar lo que tengo tuyo.",
+    "variacion_sintetica": "Sabés bien lo que tengo, no te conviene hablar",
+    "etapa_grooming": "Coerción/Extorsión",
+    "nivel_riesgo": 10
+  },
+
+  {
+    "frase_semilla": "Mandame lo que me prometiste o me enojo.",
+    "variacion_sintetica": "Dale mandame las fotos que me prometiste o me enojo",
+    "etapa_grooming": "Presión emocional/Coerción",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Mandame lo que me prometiste o me enojo.",
+    "variacion_sintetica": "Pasame lo que dijiste o me voy a enojar",
+    "etapa_grooming": "Presión emocional/Coerción",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Mandame lo que me prometiste o me enojo.",
+    "variacion_sintetica": "Si no me mandas lo que prometiste me ofendo",
+    "etapa_grooming": "Presión emocional/Coerción",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Mandame lo que me prometiste o me enojo.",
+    "variacion_sintetica": "Dale mandame eso o me voy a sentir mal",
+    "etapa_grooming": "Presión emocional/Coerción",
+    "nivel_riesgo": 8
+  },
+  {
+    "frase_semilla": "Mandame lo que me prometiste o me enojo.",
+    "variacion_sintetica": "Dijiste que ibas a mandar, cumplí o me enojo",
+    "etapa_grooming": "Presión emocional/Coerción",
+    "nivel_riesgo": 9
+  },
+
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Dale pasame una foto si no se la voy a mostrar a nadie",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Pasame una foto que no la muestro",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
+  {
+    "frase_semilla": "Pasame una foto, total yo no se la muestro a nadie.",
+    "variacion_sintetica": "Dale mandame foto que no se la paso a nadie",
+    "etapa_grooming": "Solicitud de material sensible",
+    "nivel_riesgo": 9
+  },
 
   {
     "frase_semilla": "Sos muy madura para tu edad, no pareces de [edad].",
@@ -302,6 +400,320 @@
     "variacion_sintetica": "Para mí sos mucho más grande de lo que decís",
     "etapa_grooming": "Enganche emocional/Validación",
     "nivel_riesgo": 8
+  },
+
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Hola",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Holaaaaa",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Hola sami cm estas",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Hola Sami ! Gracias !",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Hola como andas",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Hey que tal",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Buenas tardes",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Buenos dias",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Hola, cómo estás?",
+    "variacion_sintetica": "Buenas noches",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Gracias",
+    "variacion_sintetica": "Gracias",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Gracias",
+    "variacion_sintetica": "Muchas gracias",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Gracias",
+    "variacion_sintetica": "Gracias por todo",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "De nada",
+    "variacion_sintetica": "De nada",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "De nada",
+    "variacion_sintetica": "De nada Samanta",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "De nada",
+    "variacion_sintetica": "Por nada",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Todo bien",
+    "variacion_sintetica": "Todo bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Todo bien",
+    "variacion_sintetica": "Ahora esta re bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Todo bien",
+    "variacion_sintetica": "Perp ahora esta re bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Todo bien",
+    "variacion_sintetica": "Esta todo re bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Todo bien",
+    "variacion_sintetica": "Si todo bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "La pasamos bien",
+    "variacion_sintetica": "La pasamos re lindo",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "La pasamos bien",
+    "variacion_sintetica": "La pasamos genial",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "La pasamos bien",
+    "variacion_sintetica": "La pasamos muy bien",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Llamada",
+    "variacion_sintetica": "Llamada entrante",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Llamada",
+    "variacion_sintetica": "Llamada perdida",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Llamada",
+    "variacion_sintetica": "Llamada saliente",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Ok",
+    "variacion_sintetica": "Ok",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Ok",
+    "variacion_sintetica": "Dale",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Ok",
+    "variacion_sintetica": "Dale genial",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Ok",
+    "variacion_sintetica": "Joya",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Ok",
+    "variacion_sintetica": "Perfecto",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Chau",
+    "variacion_sintetica": "Chau",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Chau",
+    "variacion_sintetica": "Nos vemos",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Chau",
+    "variacion_sintetica": "Hasta luego",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Chau",
+    "variacion_sintetica": "Adios",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "Tenés la tarea de matemática?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "Me pasas los apuntes de clase?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "El profesor dejó mucha tarea",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "Mañana tengo examen de historia",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "Vamos a estudiar para la prueba?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "El proyecto es para el viernes",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto escolar",
+    "variacion_sintetica": "La maestra nos dio tarea grupal",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto familiar",
+    "variacion_sintetica": "Mi mamá me dijo que llegue temprano",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto familiar",
+    "variacion_sintetica": "Voy a comer con mi familia",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto familiar",
+    "variacion_sintetica": "Mi hermano me prestó su libro",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto familiar",
+    "variacion_sintetica": "Mis padres me van a buscar",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Vamos a la fiesta de cumpleaños?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Jugamos al fútbol el sábado?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Viste la película nueva?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Qué serie estás viendo?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Me prestas el libro que leíste?",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
+  },
+  {
+    "frase_semilla": "Contexto social",
+    "variacion_sintetica": "Vamos al entrenamiento de básquet",
+    "etapa_grooming": "Normal",
+    "nivel_riesgo": 0
   }
 ]
 
