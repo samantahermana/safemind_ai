@@ -38,6 +38,7 @@ const TutorMainScreen = () => {
   const [linkedChildren, setLinkedChildren] = useState<any[]>([]);
   const [linkedChildrenCount, setLinkedChildrenCount] = useState(0);
   const [archivedAlerts, setArchivedAlerts] = useState<Set<string>>(new Set());
+  const [selectedChildFilter, setSelectedChildFilter] = useState<string | null>(null);
   const user = auth().currentUser;
 
   // Asegurar que el tutor siempre tenga el ícono normal
@@ -260,6 +261,22 @@ const TutorMainScreen = () => {
     saveFcmToken();
   }, []);
 
+  // Filtrar notificaciones según el menor seleccionado
+  const filteredNotifications = selectedChildFilter
+    ? notifications.filter(n => n.childEmail === selectedChildFilter)
+    : notifications;
+
+  // Manejar click en pill de menor
+  const handleChildFilter = (childEmail: string) => {
+    if (selectedChildFilter === childEmail) {
+      // Si ya está seleccionado, deseleccionar (mostrar todo)
+      setSelectedChildFilter(null);
+    } else {
+      // Seleccionar este menor
+      setSelectedChildFilter(childEmail);
+    }
+  };
+
   const renderItem = ({item}: {item: NotificationData}) => {
     const isHighRisk = item.riskLevel >= 7;
     const isMediumRisk = item.riskLevel >= 5 && item.riskLevel < 7;
@@ -450,22 +467,40 @@ const TutorMainScreen = () => {
           {linkedChildren.length === 0 ? (
             <Text style={styles.noChildrenText}>Esperando vinculación...</Text>
           ) : (
-            linkedChildren.map(child => (
-              <View key={child.id} style={styles.childBadge}>
-                <Text style={styles.childBadgeText}>📱 {child.email?.split('@')[0] || 'Dispositivo'}</Text>
-              </View>
-            ))
+            linkedChildren.map(child => {
+              const isSelected = selectedChildFilter === child.email;
+              return (
+                <TouchableOpacity
+                  key={child.id}
+                  onPress={() => handleChildFilter(child.email)}
+                  style={[
+                    styles.childBadge,
+                    isSelected && styles.childBadgeSelected,
+                  ]}>
+                  <Text style={[
+                    styles.childBadgeText,
+                    isSelected && styles.childBadgeTextSelected,
+                  ]}>
+                    {isSelected ? '✓ ' : '📱 '}{child.email?.split('@')[0] || 'Dispositivo'}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })
           )}
         </View>
       </View>
 
       <FlatList
-        data={notifications}
+        data={filteredNotifications}
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Sin alertas críticas.</Text>
+            <Text style={styles.emptyText}>
+              {selectedChildFilter
+                ? `Sin alertas para ${selectedChildFilter.split('@')[0]}`
+                : 'Sin alertas críticas.'}
+            </Text>
           </View>
         }
       />
@@ -613,7 +648,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 4,
   },
+  childBadgeSelected: {
+    backgroundColor: '#3498db',
+    borderWidth: 2,
+    borderColor: '#2980b9',
+  },
   childBadgeText: { fontSize: 11, color: '#3498db', fontWeight: 'bold' },
+  childBadgeTextSelected: { color: '#fff' },
   childBadgeInAlert: {
     backgroundColor: '#e8f5e9',
     paddingHorizontal: 10,
