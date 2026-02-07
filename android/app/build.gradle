@@ -60,10 +60,11 @@ android {
     namespace "com.safemindai"
     defaultConfig {
         applicationId "com.safemindai"
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion 23
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     signingConfigs {
         debug {
@@ -72,15 +73,19 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('safemind-release.keystore')
+            storePassword 'safemind123'
+            keyAlias 'safemind-key'
+            keyPassword 'safemind123'
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -91,6 +96,26 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // Forzar versiones específicas de AndroidX lifecycle compatibles con React Native 0.73
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-common:2.5.1")
+    implementation("androidx.fragment:fragment:1.5.7")
+    
+    // AndroidX DataStore para Google Sign In con versión compatible  
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences-core:1.1.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
+    
+    // Kotlin Coroutines necesarias para DataStore
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    
+    // MultiDex explícito
+    implementation("androidx.multidex:multidex:2.0.1")
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
@@ -98,4 +123,16 @@ dependencies {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "androidx.lifecycle:lifecycle-viewmodel:2.5.1"
+        force "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+        force "androidx.lifecycle:lifecycle-runtime:2.5.1"
+        force "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+        force "androidx.lifecycle:lifecycle-common:2.5.1"
+        force "androidx.fragment:fragment:1.5.7"
+    }
+}
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply plugin: 'com.google.gms.google-services'

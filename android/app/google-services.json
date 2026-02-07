@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "542816805960",
+    "project_id": "safemind-ai-c188a",
+    "storage_bucket": "safemind-ai-c188a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542816805960:android:b3a68ab60606269e0f247d",
+        "android_client_info": {
+          "package_name": "com.safemindai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542816805960-n154agqqi66888c7nh99rn60ool69fs4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safemindai",
+            "certificate_hash": "e113ce389259fd25ead6d07862e8e0d495634fb7"
+          }
+        },
+        {
+          "client_id": "542816805960-m6dqmqk1d1d9p8fa6fdufjck1i6tptel.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNkaCHfs3BTbZscynA4X-lEMaqKAvRlIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "542816805960-m6dqmqk1d1d9p8fa6fdufjck1i6tptel.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
