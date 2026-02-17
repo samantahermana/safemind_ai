@@ -10,34 +10,49 @@ const App = () => {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const [roleResolved, setRoleResolved] = useState(false);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(async (userState) => {
+    const subscriber = auth().onAuthStateChanged((userState) => {
       setUser(userState);
-      if (userState) {
-        const doc = await firestore().collection('users').doc(userState.uid).get();
-        if (doc.exists) {
-          const userData = doc.data();
-          setRole(userData?.role || null);
-        } else {
-          // Si el usuario existe pero no tiene documento en Firestore, 
-          // puede ser un caso excepcional, mantener role como null
-          setRole(null);
-        }
-      } else {
-        // Si no hay usuario, resetear el rol
-        setRole(null);
-      }
       setInitializing(false);
     });
     return subscriber;
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setRole(null);
+      setRoleResolved(true);
+      return;
+    }
+
+    setRoleResolved(false);
+
+    const unsubscribe = firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot(
+        (doc) => {
+          const userData = doc.data();
+          setRole(userData?.role || null);
+          setRoleResolved(true);
+        },
+        (error) => {
+          console.error('Error al escuchar rol de usuario:', error);
+          setRole(null);
+          setRoleResolved(true);
+        }
+      );
+
+    return () => unsubscribe();
+  }, [user]);
     useEffect(() => {
-    console.log('🚀 APP INICIADO');
+    console.log('🚀 APP INICIADA');
   }, []);
 
 
-  if (initializing) {
+  if (initializing || (user && !roleResolved)) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
@@ -47,7 +62,12 @@ const App = () => {
 
   if (!user) return <LoginScreen onLoginSuccess={() => {}} />;
   if (role === 'tutor') return <TutorMainScreen />;
-  return <ChildMainScreen />;
+  if (role === 'child') return <ChildMainScreen />;
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
 };
 
 export default App;
