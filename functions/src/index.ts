@@ -3,18 +3,6 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-const maskToken = (token: string): string => {
-  if (!token) {
-    return "<empty>";
-  }
-
-  if (token.length <= 12) {
-    return "***";
-  }
-
-  return `${token.slice(0, 6)}...${token.slice(-6)}`;
-};
-
 export const sendriskalert = onDocumentCreated(
   "alerts/{alertId}",
   async (event) => {
@@ -64,7 +52,7 @@ export const sendriskalert = onDocumentCreated(
         const fcmToken = String(userData.fcmToken);
         console.log(
           `[sendriskalert] Token encontrado tutorId=${tutorId} ` +
-          `token=${maskToken(fcmToken)}`,
+          `token=${fcmToken}`,
         );
 
         // Determinar título según nivel de riesgo
@@ -84,8 +72,7 @@ export const sendriskalert = onDocumentCreated(
           body += ` (${groomingStage})`;
         }
 
-        // Enviar solo data payload para que los handlers de la app muestren
-        // la notificación
+        // Enviar solo data payload para que los handlers de la app muestren la notificación
         const message = {
           token: fcmToken,
           notification: {
