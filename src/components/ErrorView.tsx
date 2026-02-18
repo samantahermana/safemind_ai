@@ -1,6 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {CameraError} from '../hooks/useCamera';
+import {styles} from '../styles/components/ErrorView.styles';
 
 interface ErrorViewProps {
   error: CameraError;
@@ -41,49 +42,3 @@ export const ErrorView: React.FC<ErrorViewProps> = ({error, onRetry}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-    paddingHorizontal: 30,
-  },
-  icon: {
-    fontSize: 64,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
-  },
-  message: {
-    fontSize: 16,
-    color: '#ccc',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 30,
-    paddingVertical: 14,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  hint: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: 20,
-    fontStyle: 'italic',
-  },
-});

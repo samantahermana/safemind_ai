@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View, ActivityIndicator, StyleSheet} from 'react-native';
+import {View, ActivityIndicator} from 'react-native';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import TutorMainScreen from './src/screens/tutor/TutorMainScreen';
 import ChildMainScreen from './src/screens/child/ChildMainScreen';
+import {styles} from './src/styles/screens/App.styles';
 
 const App = () => {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
@@ -13,6 +14,7 @@ const App = () => {
   const [roleResolved, setRoleResolved] = useState(false);
 
   useEffect(() => {
+    console.log('🚀 APP INICIADA');
     const subscriber = auth().onAuthStateChanged(userState => {
       setUser(userState);
       setInitializing(false);
@@ -47,9 +49,6 @@ const App = () => {
 
     return () => unsubscribe();
   }, [user]);
-  useEffect(() => {
-    console.log('🚀 APP INICIADA');
-  }, []);
 
   if (initializing || (user && !roleResolved)) {
     return (
@@ -74,13 +73,5 @@ const App = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;

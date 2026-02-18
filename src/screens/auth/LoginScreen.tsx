@@ -1,15 +1,9 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, Alert} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {styles} from '../../styles/screens/LoginScreen.styles';
 
 GoogleSignin.configure({
   webClientId:
@@ -182,105 +176,5 @@ const LoginScreen = ({onLoginSuccess}: {onLoginSuccess: () => void}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 30,
-    backgroundColor: '#F5F7F9',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#2c3e50',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#7f8c8d',
-  },
-  roleSelector: {
-    marginBottom: 20,
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    elevation: 2,
-  },
-  roleLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#34495e',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  roleButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  roleButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#dcdde1',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  roleButtonActive: {
-    borderColor: '#2ecc71',
-    backgroundColor: '#d5f4e6',
-  },
-  roleButtonText: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    fontWeight: '500',
-  },
-  roleButtonTextActive: {
-    color: '#27ae60',
-    fontWeight: 'bold',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#34495e',
-    marginBottom: 5,
-    marginLeft: 5,
-  },
-  input: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#dcdde1',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    color: '#000000',
-    fontSize: 16,
-    elevation: 2,
-  },
-  button: {
-    backgroundColor: '#2ecc71',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-    elevation: 3,
-  },
-  buttonText: {color: '#fff', fontWeight: 'bold', fontSize: 16},
-  googleButton: {
-    backgroundColor: '#db4437',
-    marginTop: 10,
-  },
-  switchText: {
-    textAlign: 'center',
-    marginTop: 25,
-    color: '#3498db',
-    fontWeight: '500',
-  },
-});
 
 export default LoginScreen;

@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   DeviceEventEmitter,
   ActivityIndicator,
   TouchableOpacity,
@@ -20,6 +19,7 @@ import {
   requestCameraPermission,
   checkCameraPermission,
 } from '../../utils/permissions';
+import {styles} from '../../styles/screens/ChildMainScreen.styles';
 
 const ChildMainScreen = () => {
   const [tutorId, setTutorId] = useState<string | null>(null);
@@ -480,7 +480,7 @@ const QRScannerView = ({
         </TouchableOpacity>
       </View>
       <Camera
-        style={StyleSheet.absoluteFill}
+        style={styles.cameraFill}
         device={device}
         isActive={isActive}
         codeScanner={{
@@ -498,264 +498,5 @@ const QRScannerView = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f0f9ff',
-  },
-  container: {flex: 1, backgroundColor: 'black'},
-  overlay: {
-    position: 'absolute',
-    top: 60,
-    width: '100%',
-    zIndex: 1,
-    alignItems: 'center',
-    padding: 20,
-  },
-  scanTitle: {color: 'white', fontSize: 22, fontWeight: 'bold'},
-  scanSub: {color: 'white', textAlign: 'center', marginTop: 10},
-  cancelScanButton: {
-    marginTop: 20,
-    backgroundColor: 'rgba(231, 76, 60, 0.9)',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  cancelScanButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  scannerFrame: {
-    position: 'absolute',
-    top: '30%',
-    left: '15%',
-    width: '70%',
-    height: '35%',
-    borderWidth: 2,
-    borderColor: '#2ecc71',
-    borderRadius: 20,
-    backgroundColor: 'transparent',
-  },
-  welcomeContainer: {
-    flex: 1,
-    backgroundColor: '#f0f9ff',
-  },
-  welcomeContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 30,
-  },
-  welcomeEmoji: {
-    fontSize: 80,
-    marginBottom: 20,
-  },
-  welcomeTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    textAlign: 'center',
-    marginBottom: 30,
-    paddingHorizontal: 20,
-  },
-  instructionsBox: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 15,
-    width: '100%',
-    marginBottom: 30,
-    elevation: 3,
-  },
-  instructionsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#34495e',
-    marginBottom: 15,
-  },
-  instructionStep: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  scanButton: {
-    backgroundColor: '#2ecc71',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    elevation: 5,
-  },
-  scanButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  shieldContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f9ff',
-    padding: 20,
-  },
-  menuButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    padding: 10,
-    zIndex: 10,
-  },
-  menuIcon: {
-    fontSize: 28,
-    color: '#34495e',
-    fontWeight: 'bold',
-  },
-  shieldIcon: {
-    fontSize: 60,
-  },
-  iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 10,
-  },
-  shieldTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginTop: 30,
-  },
-  shieldStatus: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  linkedBadge: {
-    marginTop: 40,
-    padding: 10,
-    backgroundColor: '#d1fae5',
-    borderRadius: 20,
-  },
-  linkedText: {color: '#065f46', fontSize: 12, fontWeight: 'bold'},
-  permissionBadge: {
-    marginTop: 20,
-    padding: 15,
-    borderRadius: 12,
-    width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 3,
-  },
-  permissionGranted: {
-    backgroundColor: '#d1fae5',
-    borderWidth: 2,
-    borderColor: '#10b981',
-  },
-  permissionDenied: {
-    backgroundColor: '#fee2e2',
-    borderWidth: 2,
-    borderColor: '#ef4444',
-  },
-  permissionIcon: {
-    fontSize: 28,
-    marginRight: 12,
-  },
-  permissionTextContainer: {
-    flex: 1,
-  },
-  permissionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 2,
-  },
-  permissionSubtitle: {
-    fontSize: 11,
-    color: '#6b7280',
-    marginBottom: 6,
-  },
-  permissionAction: {
-    fontSize: 12,
-    color: '#2563eb',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
-  },
-  permissionDeactivate: {
-    fontSize: 11,
-    color: '#6b7280',
-    fontStyle: 'italic',
-  },
-  actionsContainer: {
-    marginTop: 50,
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  unlinkButton: {
-    backgroundColor: '#ff9800',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  unlinkButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  logoutButton: {
-    backgroundColor: '#e74c3c',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  retryButton: {
-    backgroundColor: '#2ecc71',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelButton: {
-    backgroundColor: '#95a5a6',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  cancelButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  errorText: {
-    fontSize: 18,
-    color: '#e74c3c',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  errorSubtext: {fontSize: 14, color: '#7f8c8d', textAlign: 'center'},
-});
 
 export default ChildMainScreen;

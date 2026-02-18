@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {Camera} from 'react-native-vision-camera';
 import {useCameraPermission} from '../../hooks/useCameraPermission';
 import {useCamera} from '../../hooks/useCamera';
 import {ErrorView} from '../../components/ErrorView';
+import {styles} from '../../styles/screens/ChildScannerScreen.styles';
 
 const ChildScannerScreen = () => {
   const {hasPermission, isChecking, retry} = useCameraPermission();
@@ -81,7 +76,7 @@ const CameraView = () => {
   return (
     <View style={styles.container}>
       <Camera
-        style={StyleSheet.absoluteFill}
+        style={styles.camera}
         device={device}
         isActive={isActive}
         codeScanner={{
@@ -113,102 +108,5 @@ const CameraView = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  icon: {
-    fontSize: 64,
-    marginBottom: 20,
-  },
-  text: {
-    fontSize: 18,
-    color: '#fff',
-    marginBottom: 10,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  subtext: {
-    fontSize: 14,
-    color: '#ccc',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 50,
-    left: 0,
-    right: 0,
-    padding: 20,
-    alignItems: 'center',
-  },
-  overlayContent: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  overlaySuccess: {
-    backgroundColor: 'rgba(0, 122, 255, 0.8)',
-  },
-  overlayText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  scanFrame: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-  },
-  corner: {
-    position: 'absolute',
-    width: 30,
-    height: 30,
-    borderColor: '#007AFF',
-  },
-  topLeft: {
-    top: 0,
-    left: 0,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-  },
-  topRight: {
-    top: 0,
-    right: 0,
-    borderTopWidth: 4,
-    borderRightWidth: 4,
-  },
-  bottomLeft: {
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: 4,
-    borderLeftWidth: 4,
-  },
-  bottomRight: {
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: 4,
-    borderRightWidth: 4,
-  },
-});
 
 export default ChildScannerScreen;

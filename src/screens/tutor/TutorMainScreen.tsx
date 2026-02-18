@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
   Modal,
   SafeAreaView,
-  StyleSheet,
   Text,
   View,
   FlatList,
@@ -16,6 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, {AndroidImportance} from '@notifee/react-native';
+import {styles} from '../../styles/screens/TutorMainScreen.styles';
 
 interface NotificationData {
   id: number;
@@ -585,190 +585,5 @@ const TutorMainScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
-  header: {
-    padding: 20,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    elevation: 4,
-  },
-  title: {fontSize: 22, fontWeight: 'bold', color: '#1a1a1a'},
-  subtitle: {fontSize: 12, color: '#2ecc71', fontWeight: 'bold', marginTop: 2},
-  card: {
-    backgroundColor: '#fff',
-    padding: 18,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 12,
-    elevation: 3,
-  },
-  highRiskCard: {
-    backgroundColor: '#fff5f5',
-    borderLeftWidth: 6,
-    borderLeftColor: '#e74c3c',
-  },
-  mediumRiskCard: {
-    backgroundColor: '#fffdf0',
-    borderLeftWidth: 6,
-    borderLeftColor: '#f1c40f',
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  sender: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-    flex: 1,
-  },
-  highRiskText: {color: '#c0392b'},
-  mediumRiskText: {color: '#967117'},
-  time: {
-    fontSize: 11,
-    color: '#999',
-    marginLeft: 8,
-  },
-  message: {
-    fontSize: 15,
-    color: '#2d3436',
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  riskBadge: {
-    backgroundColor: '#e74c3c',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    marginTop: 8,
-    alignSelf: 'flex-start',
-  },
-  mediumRiskBadge: {
-    backgroundColor: '#f1c40f',
-  },
-  riskBadgeText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-  },
-  emptyContainer: {alignItems: 'center', marginTop: 100},
-  emptyText: {fontSize: 16, color: '#bdc3c7', fontWeight: 'bold'},
-  logoutButton: {padding: 8, backgroundColor: '#fee', borderRadius: 5},
-  logoutText: {color: '#e74c3c', fontSize: 12, fontWeight: 'bold'},
-  clearButton: {
-    padding: 8,
-    backgroundColor: '#fff3e0',
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  clearButtonText: {
-    fontSize: 18,
-  },
-  qrHeaderButton: {
-    padding: 8,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  qrHeaderIcon: {
-    fontSize: 20,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '85%',
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 25,
-    alignItems: 'center',
-    elevation: 10,
-  },
-  modalTitle: {fontSize: 22, fontWeight: 'bold', color: '#2c3e50'},
-  modalSub: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  qrWrapper: {padding: 15, backgroundColor: 'white', marginVertical: 20},
-  uidText: {fontSize: 10, color: '#bdc3c7', marginBottom: 20},
-  closeButton: {
-    backgroundColor: '#3498db',
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  closeButtonText: {color: 'white', fontWeight: 'bold'},
-  dashboardContainer: {
-    padding: 15,
-    backgroundColor: '#fff',
-    margin: 16,
-    borderRadius: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 2,
-  },
-  statCard: {
-    alignItems: 'center',
-    paddingRight: 15,
-    borderRightWidth: 1,
-    borderRightColor: '#eee',
-  },
-  statNumber: {fontSize: 28, fontWeight: 'bold', color: '#3498db'},
-  statLabel: {fontSize: 10, color: '#7f8c8d', fontWeight: 'bold'},
-  childrenList: {flex: 1, paddingLeft: 15},
-  listTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 5,
-  },
-  childBadge: {
-    backgroundColor: '#ebf5ff',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    alignSelf: 'flex-start',
-    marginBottom: 4,
-  },
-  childBadgeSelected: {
-    backgroundColor: '#3498db',
-    borderWidth: 2,
-    borderColor: '#2980b9',
-  },
-  childBadgeText: {fontSize: 11, color: '#3498db', fontWeight: 'bold'},
-  childBadgeTextSelected: {color: '#fff'},
-  childBadgeInAlert: {
-    backgroundColor: '#e8f5e9',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#81c784',
-  },
-  childBadgeInAlertText: {
-    fontSize: 11,
-    color: '#2e7d32',
-    fontWeight: 'bold',
-  },
-  noChildrenText: {fontSize: 11, color: '#bdc3c7', fontStyle: 'italic'},
-});
 
 export default TutorMainScreen;
