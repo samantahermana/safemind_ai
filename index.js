@@ -3,7 +3,7 @@ import App from './App';
 import {name as appName} from './app.json';
 import 'text-encoding';
 import messaging from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 
 // Handler para mensajes en segundo plano
 messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -36,7 +36,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 // Handler para eventos de notificaciones en background
-notifee.onBackgroundEvent(async ({ type, detail }) => {
+notifee.onBackgroundEvent(async ({type, detail}) => {
   if (type === EventType.PRESS) {
     // Cuando el usuario toca la notificación, la app se abrirá automáticamente
     // debido al pressAction configurado en la notificación

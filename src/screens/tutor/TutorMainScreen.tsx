@@ -15,7 +15,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 
 interface NotificationData {
   id: number;
@@ -38,14 +38,16 @@ const TutorMainScreen = () => {
   const [linkedChildren, setLinkedChildren] = useState<any[]>([]);
   const [linkedChildrenCount, setLinkedChildrenCount] = useState(0);
   const [archivedAlerts, setArchivedAlerts] = useState<Set<string>>(new Set());
-  const [selectedChildFilter, setSelectedChildFilter] = useState<string | null>(null);
+  const [selectedChildFilter, setSelectedChildFilter] = useState<string | null>(
+    null,
+  );
   const user = auth().currentUser;
 
   // Asegurar que el tutor siempre tenga el ícono normal
   useEffect(() => {
     const setTutorMode = async () => {
       try {
-        const { AppModeModule } = NativeModules;
+        const {AppModeModule} = NativeModules;
         if (AppModeModule) {
           await AppModeModule.setTutorMode();
           console.log('👨‍💼 Modo tutor activado (ícono normal)');
@@ -60,32 +62,32 @@ const TutorMainScreen = () => {
   // Solicitar permiso y guardar FCM token para notificaciones push
   useEffect(() => {
     console.log('🚀 Iniciando configuración de notificaciones push...');
-    
+
     const setupNotifications = async () => {
       try {
         const currentUser = auth().currentUser;
         console.log('👤 Usuario actual:', currentUser?.uid);
-        
+
         if (!currentUser) {
           console.log('❌ No hay usuario autenticado');
           return;
         }
 
         const authStatus = await messaging().requestPermission();
-        
+
         const enabled =
           authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
           authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
         if (enabled) {
           const token = await messaging().getToken();
-          await firestore()
-            .collection('users')
-            .doc(currentUser.uid)
-            .set(
-              { fcmToken: token, lastTokenUpdate: firestore.FieldValue.serverTimestamp() },
-              { merge: true }
-            );
+          await firestore().collection('users').doc(currentUser.uid).set(
+            {
+              fcmToken: token,
+              lastTokenUpdate: firestore.FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+          );
         }
       } catch (error) {
         console.error('Error al configurar notificaciones:', error);
@@ -93,6 +95,28 @@ const TutorMainScreen = () => {
     };
 
     setupNotifications();
+
+    const unsubscribeTokenRefresh = messaging().onTokenRefresh(
+      async refreshedToken => {
+        try {
+          const currentUser = auth().currentUser;
+          if (!currentUser) {
+            return;
+          }
+
+          await firestore().collection('users').doc(currentUser.uid).set(
+            {
+              fcmToken: refreshedToken,
+              lastTokenUpdate: firestore.FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+          );
+          console.log('🔁 Token FCM refrescado y guardado');
+        } catch (error) {
+          console.error('Error al actualizar token FCM refrescado:', error);
+        }
+      },
+    );
 
     // Listener para notificaciones en primer plano
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -106,8 +130,14 @@ const TutorMainScreen = () => {
         });
 
         await notifee.displayNotification({
-          title: typeof remoteMessage.data.title === 'string' ? remoteMessage.data.title : String(remoteMessage.data.title || ''),
-          body: typeof remoteMessage.data.body === 'string' ? remoteMessage.data.body : String(remoteMessage.data.body || ''),
+          title:
+            typeof remoteMessage.data.title === 'string'
+              ? remoteMessage.data.title
+              : String(remoteMessage.data.title || ''),
+          body:
+            typeof remoteMessage.data.body === 'string'
+              ? remoteMessage.data.body
+              : String(remoteMessage.data.body || ''),
           android: {
             channelId,
             importance: AndroidImportance.HIGH,
@@ -124,12 +154,15 @@ const TutorMainScreen = () => {
     });
 
     // Handler para eventos de notificaciones cuando la app está en foreground
-    const unsubscribeNotifeeEvents = notifee.onForegroundEvent(({ type, detail }) => {
-      // Manejar eventos de notificaciones
-    });
+    const unsubscribeNotifeeEvents = notifee.onForegroundEvent(
+      ({type: _type, detail: _detail}) => {
+        // Manejar eventos de notificaciones
+      },
+    );
 
     return () => {
       unsubscribe();
+      unsubscribeTokenRefresh();
       unsubscribeNotifeeEvents();
     };
   }, []);
@@ -152,7 +185,9 @@ const TutorMainScreen = () => {
   // Escuchar hijos vinculados en tiempo real desde linkedChildren
   useEffect(() => {
     const currentUser = auth().currentUser;
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
 
     console.log('👨‍👩‍👧 Escuchando hijos vinculados para tutor:', currentUser.uid);
 
@@ -161,25 +196,25 @@ const TutorMainScreen = () => {
       .where('tutorId', '==', currentUser.uid)
       .where('isActive', '==', true)
       .onSnapshot(
-        (snapshot) => {
+        snapshot => {
           const children: any[] = [];
-          snapshot.forEach((doc) => {
+          snapshot.forEach(doc => {
             const data = doc.data();
-            children.push({ 
-              id: doc.id, 
+            children.push({
+              id: doc.id,
               email: data.childEmail,
               linkedAt: data.linkedAt,
-              ...data 
+              ...data,
             });
           });
-          
+
           console.log('Hijos activos encontrados:', children.length);
           setLinkedChildren(children);
           setLinkedChildrenCount(children.length);
         },
-        (error) => {
+        error => {
           console.error('❌ Error al escuchar linkedChildren:', error);
-        }
+        },
       );
 
     return () => unsubscribe();
@@ -187,14 +222,19 @@ const TutorMainScreen = () => {
 
   // Escuchar alertas en tiempo real
   useEffect(() => {
-    const user = auth().currentUser;
-    if (!user) return;
+    const currentUser = auth().currentUser;
+    if (!currentUser) {
+      return;
+    }
 
-    console.log('🔔 Iniciando listener de alertas para tutor:', user.uid);
+    console.log(
+      '🔔 Iniciando listener de alertas para tutor:',
+      currentUser.uid,
+    );
 
     const unsubscribe = firestore()
       .collection('alerts')
-      .where('tutorId', '==', user.uid)
+      .where('tutorId', '==', currentUser.uid)
       .onSnapshot(
         querySnapshot => {
           const tempAlerts: NotificationData[] = [];
@@ -204,21 +244,19 @@ const TutorMainScreen = () => {
             if (archivedAlerts.has(doc.id)) {
               return;
             }
-            
+
             tempAlerts.push({
               id: doc.id as any,
               appName: data.appName,
               message: data.message,
               timestamp:
-                data.timestamp
-                  ?.toDate()
-                  .toLocaleString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }) || 'Reciente',
+                data.timestamp?.toDate().toLocaleString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }) || 'Reciente',
               isAnomalous: data.riskLevel >= 7 ? 1 : 0,
               riskLevel: data.riskLevel,
               engine: 'AI-Cloud',
@@ -228,7 +266,9 @@ const TutorMainScreen = () => {
               childEmail: data.childEmail,
             });
           });
-          tempAlerts.sort((a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+          tempAlerts.sort(
+            (a, b) => (b.timestampRaw || 0) - (a.timestampRaw || 0),
+          );
           setNotifications(tempAlerts);
         },
         error => {
@@ -250,10 +290,13 @@ const TutorMainScreen = () => {
         const uid = auth().currentUser?.uid;
 
         if (uid) {
-          await firestore().collection('users').doc(uid).set({
-            fcmToken: token,
-            lastActive: firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
+          await firestore().collection('users').doc(uid).set(
+            {
+              fcmToken: token,
+              lastActive: firestore.FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+          );
         }
       }
     };
@@ -282,18 +325,38 @@ const TutorMainScreen = () => {
     const isMediumRisk = item.riskLevel >= 5 && item.riskLevel < 7;
 
     const formatAppName = (appName: string | undefined) => {
-      if (!appName) return 'Sistema';
-      
-      if (appName.includes('com.whatsapp')) return 'WhatsApp';
-      if (appName.includes('com.instagram')) return 'Instagram';
-      if (appName.includes('com.facebook')) return 'Facebook';
-      if (appName.includes('com.snapchat')) return 'Snapchat';
-      if (appName.includes('com.tiktok')) return 'TikTok';
-      if (appName.includes('Musically')) return 'TikTok';
-      if (appName.includes('com.telegram')) return 'Telegram';
-      if (appName.includes('com.roblox')) return 'Roblox';
-      if (appName.includes('roblox')) return 'Roblox';
-      
+      if (!appName) {
+        return 'Sistema';
+      }
+
+      if (appName.includes('com.whatsapp')) {
+        return 'WhatsApp';
+      }
+      if (appName.includes('com.instagram')) {
+        return 'Instagram';
+      }
+      if (appName.includes('com.facebook')) {
+        return 'Facebook';
+      }
+      if (appName.includes('com.snapchat')) {
+        return 'Snapchat';
+      }
+      if (appName.includes('com.tiktok')) {
+        return 'TikTok';
+      }
+      if (appName.includes('Musically')) {
+        return 'TikTok';
+      }
+      if (appName.includes('com.telegram')) {
+        return 'Telegram';
+      }
+      if (appName.includes('com.roblox')) {
+        return 'Roblox';
+      }
+      if (appName.includes('roblox')) {
+        return 'Roblox';
+      }
+
       const parts = appName.split('.');
       return (
         parts[parts.length - 1].charAt(0).toUpperCase() +
@@ -302,7 +365,9 @@ const TutorMainScreen = () => {
     };
 
     const getChildName = (email: string | undefined) => {
-      if (!email) return 'Desconocido';
+      if (!email) {
+        return 'Desconocido';
+      }
       const name = email.split('@')[0];
       return name.charAt(0).toUpperCase() + name.slice(1);
     };
@@ -329,7 +394,9 @@ const TutorMainScreen = () => {
 
         {item.childEmail && (
           <View style={styles.childBadgeInAlert}>
-            <Text style={styles.childBadgeInAlertText}>{getChildName(item.childEmail)}</Text>
+            <Text style={styles.childBadgeInAlertText}>
+              {getChildName(item.childEmail)}
+            </Text>
           </View>
         )}
 
@@ -338,10 +405,7 @@ const TutorMainScreen = () => {
         </Text>
 
         <View
-          style={[
-            styles.riskBadge,
-            isMediumRisk && {backgroundColor: '#f1c40f'},
-          ]}>
+          style={[styles.riskBadge, isMediumRisk && styles.mediumRiskBadge]}>
           <Text style={styles.riskBadgeText}>
             NIVEL {item.riskLevel} | {item.groomingStage.toUpperCase()}
           </Text>
@@ -361,43 +425,54 @@ const TutorMainScreen = () => {
       'Archivar Alertas',
       '¿Deseas archivar todas las alertas visibles? (Se mantendrán como evidencia en Firestore)',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        {text: 'Cancelar', style: 'cancel'},
         {
           text: 'Archivar',
           style: 'destructive',
           onPress: async () => {
             try {
-              const user = auth().currentUser;
-              if (!user) return;
+              const currentUser = auth().currentUser;
+              if (!currentUser) {
+                return;
+              }
 
               // Obtener IDs de todas las alertas actuales
               const alertIds = notifications.map(alert => alert.id.toString());
-              
+
               // Actualizar en Firestore
               const batch = firestore().batch();
               alertIds.forEach(alertId => {
                 const alertRef = firestore().collection('alerts').doc(alertId);
-                batch.update(alertRef, { 
-                  archived: true, 
-                  archivedAt: firestore.FieldValue.serverTimestamp() 
+                batch.update(alertRef, {
+                  archived: true,
+                  archivedAt: firestore.FieldValue.serverTimestamp(),
                 });
               });
-              
+
               await batch.commit();
-              
+
               // Actualizar AsyncStorage local
-              const newArchivedSet = new Set([...Array.from(archivedAlerts), ...alertIds]);
-              await AsyncStorage.setItem('archivedAlerts', JSON.stringify(Array.from(newArchivedSet)));
+              const newArchivedSet = new Set([
+                ...Array.from(archivedAlerts),
+                ...alertIds,
+              ]);
+              await AsyncStorage.setItem(
+                'archivedAlerts',
+                JSON.stringify(Array.from(newArchivedSet)),
+              );
               setArchivedAlerts(newArchivedSet);
-              
-              Alert.alert('Éxito', `${alertIds.length} alertas archivadas (evidencia preservada en Firebase)`);
+
+              Alert.alert(
+                'Éxito',
+                `${alertIds.length} alertas archivadas (evidencia preservada en Firebase)`,
+              );
             } catch (error) {
               console.error('Error al archivar alertas:', error);
               Alert.alert('Error', 'No se pudieron archivar las alertas');
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -408,19 +483,20 @@ const TutorMainScreen = () => {
           <Text style={styles.title}>SafeMind AI</Text>
           <Text style={styles.subtitle}>● Conectado como Tutor</Text>
         </View>
-        
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity 
-            onPress={() => setModalVisible(true)} 
-            style={styles.qrHeaderButton}
-          >
-            <Text style={{ fontSize: 20 }}>📱</Text>
+
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.qrHeaderButton}>
+            <Text style={styles.qrHeaderIcon}>📱</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity onPress={handleClearAlerts} style={styles.clearButton}>
+
+          <TouchableOpacity
+            onPress={handleClearAlerts}
+            style={styles.clearButton}>
             <Text style={styles.clearButtonText}>🗑️</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
             <Text style={styles.logoutText}>Salir</Text>
           </TouchableOpacity>
@@ -431,25 +507,25 @@ const TutorMainScreen = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+        onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Vincular Hijo</Text>
-            <Text style={styles.modalSub}>Escaneá este código desde el celular del menor</Text>
-            
-            <View style={styles.qrWrapper}>
-              {user && (
-                <QRCode value={user.uid} size={200} />
-              )}
-            </View>
-            
-            <Text style={styles.uidText}>ID: {user?.uid.substring(0, 10)}...</Text>
+            <Text style={styles.modalSub}>
+              Escaneá este código desde el celular del menor
+            </Text>
 
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={() => setModalVisible(false)}
-            >
+            <View style={styles.qrWrapper}>
+              {user && <QRCode value={user.uid} size={200} />}
+            </View>
+
+            <Text style={styles.uidText}>
+              ID: {user?.uid.substring(0, 10)}...
+            </Text>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
             </TouchableOpacity>
           </View>
@@ -461,7 +537,7 @@ const TutorMainScreen = () => {
           <Text style={styles.statNumber}>{linkedChildrenCount}</Text>
           <Text style={styles.statLabel}>Dispositivos Vinculados</Text>
         </View>
-        
+
         <View style={styles.childrenList}>
           <Text style={styles.listTitle}>Dispositivos Activos:</Text>
           {linkedChildren.length === 0 ? (
@@ -477,11 +553,13 @@ const TutorMainScreen = () => {
                     styles.childBadge,
                     isSelected && styles.childBadgeSelected,
                   ]}>
-                  <Text style={[
-                    styles.childBadgeText,
-                    isSelected && styles.childBadgeTextSelected,
-                  ]}>
-                    {isSelected ? '✓ ' : '📱 '}{child.email?.split('@')[0] || 'Dispositivo'}
+                  <Text
+                    style={[
+                      styles.childBadgeText,
+                      isSelected && styles.childBadgeTextSelected,
+                    ]}>
+                    {isSelected ? '✓ ' : '📱 '}
+                    {child.email?.split('@')[0] || 'Dispositivo'}
                   </Text>
                 </TouchableOpacity>
               );
@@ -571,6 +649,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignSelf: 'flex-start',
   },
+  mediumRiskBadge: {
+    backgroundColor: '#f1c40f',
+  },
   riskBadgeText: {
     color: '#fff',
     fontSize: 11,
@@ -596,6 +677,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 10,
   },
+  qrHeaderIcon: {
+    fontSize: 20,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -610,17 +698,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 10,
   },
-  modalTitle: { fontSize: 22, fontWeight: 'bold', color: '#2c3e50' },
-  modalSub: { fontSize: 14, color: '#7f8c8d', textAlign: 'center', marginVertical: 10 },
-  qrWrapper: { padding: 15, backgroundColor: 'white', marginVertical: 20 },
-  uidText: { fontSize: 10, color: '#bdc3c7', marginBottom: 20 },
+  modalTitle: {fontSize: 22, fontWeight: 'bold', color: '#2c3e50'},
+  modalSub: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  qrWrapper: {padding: 15, backgroundColor: 'white', marginVertical: 20},
+  uidText: {fontSize: 10, color: '#bdc3c7', marginBottom: 20},
   closeButton: {
     backgroundColor: '#3498db',
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 10,
   },
-  closeButtonText: { color: 'white', fontWeight: 'bold' },
+  closeButtonText: {color: 'white', fontWeight: 'bold'},
   dashboardContainer: {
     padding: 15,
     backgroundColor: '#fff',
@@ -636,10 +729,15 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: '#eee',
   },
-  statNumber: { fontSize: 28, fontWeight: 'bold', color: '#3498db' },
-  statLabel: { fontSize: 10, color: '#7f8c8d', fontWeight: 'bold' },
-  childrenList: { flex: 1, paddingLeft: 15 },
-  listTitle: { fontSize: 12, fontWeight: 'bold', color: '#2c3e50', marginBottom: 5 },
+  statNumber: {fontSize: 28, fontWeight: 'bold', color: '#3498db'},
+  statLabel: {fontSize: 10, color: '#7f8c8d', fontWeight: 'bold'},
+  childrenList: {flex: 1, paddingLeft: 15},
+  listTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 5,
+  },
   childBadge: {
     backgroundColor: '#ebf5ff',
     paddingHorizontal: 10,
@@ -653,8 +751,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#2980b9',
   },
-  childBadgeText: { fontSize: 11, color: '#3498db', fontWeight: 'bold' },
-  childBadgeTextSelected: { color: '#fff' },
+  childBadgeText: {fontSize: 11, color: '#3498db', fontWeight: 'bold'},
+  childBadgeTextSelected: {color: '#fff'},
   childBadgeInAlert: {
     backgroundColor: '#e8f5e9',
     paddingHorizontal: 10,
@@ -665,12 +763,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#81c784',
   },
-  childBadgeInAlertText: { 
-    fontSize: 11, 
-    color: '#2e7d32', 
-    fontWeight: 'bold' 
+  childBadgeInAlertText: {
+    fontSize: 11,
+    color: '#2e7d32',
+    fontWeight: 'bold',
   },
-  noChildrenText: { fontSize: 11, color: '#bdc3c7', fontStyle: 'italic' },
+  noChildrenText: {fontSize: 11, color: '#bdc3c7', fontStyle: 'italic'},
 });
 
 export default TutorMainScreen;

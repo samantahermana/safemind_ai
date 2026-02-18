@@ -1,12 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Camera } from 'react-native-vision-camera';
-import { useCameraPermission } from '../../hooks/useCameraPermission';
-import { useCamera } from '../../hooks/useCamera';
-import { ErrorView } from '../../components/ErrorView';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+import {Camera} from 'react-native-vision-camera';
+import {useCameraPermission} from '../../hooks/useCameraPermission';
+import {useCamera} from '../../hooks/useCamera';
+import {ErrorView} from '../../components/ErrorView';
 
 const ChildScannerScreen = () => {
-  const { hasPermission, isChecking, retry } = useCameraPermission();
+  const {hasPermission, isChecking, retry} = useCameraPermission();
 
   // Mientras verifica permisos
   if (isChecking || hasPermission === null) {
@@ -49,7 +55,7 @@ const CameraView = () => {
     handleCodeScanned,
     retry,
   } = useCamera({
-    onCodeScanned: (code) => {
+    onCodeScanned: code => {
       // Aquí procesas el código QR
       console.log('✅ Código procesado:', code);
       // TODO: Navegar o vincular con tutor
@@ -84,16 +90,19 @@ const CameraView = () => {
         }}
       />
       <View style={styles.overlay}>
-        <View style={[
-          styles.overlayContent,
-          scannedCode ? styles.overlaySuccess : null
-        ]}>
+        <View
+          style={[
+            styles.overlayContent,
+            scannedCode ? styles.overlaySuccess : null,
+          ]}>
           <Text style={styles.overlayText}>
-            {scannedCode ? '✅ Código escaneado!' : '📱 Escanea el código QR del tutor'}
+            {scannedCode
+              ? '✅ Código escaneado!'
+              : '📱 Escanea el código QR del tutor'}
           </Text>
         </View>
       </View>
-      
+
       {/* Marcador de escaneo */}
       <View style={styles.scanFrame}>
         <View style={[styles.corner, styles.topLeft]} />

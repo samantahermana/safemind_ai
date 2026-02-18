@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { CameraError } from '../hooks/useCamera';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {CameraError} from '../hooks/useCamera';
 
 interface ErrorViewProps {
   error: CameraError;
   onRetry?: () => void;
 }
 
-export const ErrorView: React.FC<ErrorViewProps> = ({ error, onRetry }) => {
+export const ErrorView: React.FC<ErrorViewProps> = ({error, onRetry}) => {
   const getErrorIcon = () => {
     switch (error.type) {
       case 'NO_CAMERA':
@@ -26,13 +26,13 @@ export const ErrorView: React.FC<ErrorViewProps> = ({ error, onRetry }) => {
       <Text style={styles.icon}>{getErrorIcon()}</Text>
       <Text style={styles.title}>Error de Cámara</Text>
       <Text style={styles.message}>{error.message}</Text>
-      
+
       {error.canRetry && onRetry && (
         <TouchableOpacity style={styles.button} onPress={onRetry}>
           <Text style={styles.buttonText}>Reintentar</Text>
         </TouchableOpacity>
       )}
-      
+
       {!error.canRetry && (
         <Text style={styles.hint}>
           Por favor, verifica que tu dispositivo tenga una cámara funcional

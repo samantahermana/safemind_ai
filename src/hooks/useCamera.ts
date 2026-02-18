@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Camera, CameraDevice, Code } from 'react-native-vision-camera';
+import {useState, useEffect, useCallback} from 'react';
+import {Camera, CameraDevice, Code} from 'react-native-vision-camera';
 
 interface UseCameraOptions {
   onCodeScanned?: (code: string) => void;
@@ -13,8 +13,8 @@ export interface CameraError {
 }
 
 export const useCamera = (options: UseCameraOptions = {}) => {
-  const { onCodeScanned, resetDelay = 2000 } = options;
-  
+  const {onCodeScanned, resetDelay = 2000} = options;
+
   const [device, setDevice] = useState<CameraDevice | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState<CameraError | null>(null);
@@ -30,7 +30,7 @@ export const useCamera = (options: UseCameraOptions = {}) => {
 
       const devices = await Camera.getAvailableCameraDevices();
       console.log('📷 Dispositivos encontrados:', devices.length);
-      
+
       if (devices.length === 0) {
         setError({
           type: 'NO_CAMERA',
@@ -41,9 +41,12 @@ export const useCamera = (options: UseCameraOptions = {}) => {
         return;
       }
 
-      const backCamera = devices.find((d) => d.position === 'back');
-      console.log('📷 Back camera:', backCamera ? 'Encontrada ✅' : 'No encontrada ❌');
-      
+      const backCamera = devices.find(d => d.position === 'back');
+      console.log(
+        '📷 Back camera:',
+        backCamera ? 'Encontrada ✅' : 'No encontrada ❌',
+      );
+
       if (backCamera) {
         setDevice(backCamera);
         setIsActive(true);
@@ -55,13 +58,14 @@ export const useCamera = (options: UseCameraOptions = {}) => {
           canRetry: true,
         });
       }
-      
+
       setIsLoading(false);
     } catch (err) {
       console.error('❌ Error al inicializar cámara:', err);
-      
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
-      
+
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error desconocido';
+
       setError({
         type: 'INIT_FAILED',
         message: `Error al inicializar: ${errorMessage}`,
@@ -88,27 +92,30 @@ export const useCamera = (options: UseCameraOptions = {}) => {
   }, [setupCamera]);
 
   // Manejar escaneo con auto-reset
-  const handleCodeScanned = useCallback((codes: Code[]) => {
-    if (codes.length > 0 && isActive && !scannedCode) {
-      const code = codes[0].value;
-      console.log('📱 QR escaneado:', code);
-      
-      setScannedCode(code ?? null);
-      setIsActive(false);
-      
-      // Callback opcional
-      if (onCodeScanned && code) {
-        onCodeScanned(code);
+  const handleCodeScanned = useCallback(
+    (codes: Code[]) => {
+      if (codes.length > 0 && isActive && !scannedCode) {
+        const code = codes[0].value;
+        console.log('📱 QR escaneado:', code);
+
+        setScannedCode(code ?? null);
+        setIsActive(false);
+
+        // Callback opcional
+        if (onCodeScanned && code) {
+          onCodeScanned(code);
+        }
+
+        // Auto-reset después del delay
+        setTimeout(() => {
+          console.log('🔄 Reactivando escáner...');
+          setScannedCode(null);
+          setIsActive(true);
+        }, resetDelay);
       }
-      
-      // Auto-reset después del delay
-      setTimeout(() => {
-        console.log('🔄 Reactivando escáner...');
-        setScannedCode(null);
-        setIsActive(true);
-      }, resetDelay);
-    }
-  }, [isActive, scannedCode, onCodeScanned, resetDelay]);
+    },
+    [isActive, scannedCode, onCodeScanned, resetDelay],
+  );
 
   // Método manual para resetear
   const reset = useCallback(() => {

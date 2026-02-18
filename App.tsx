@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import React, {useEffect, useState} from 'react';
+import {View, ActivityIndicator, StyleSheet} from 'react-native';
+import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import TutorMainScreen from './src/screens/tutor/TutorMainScreen';
@@ -13,7 +13,7 @@ const App = () => {
   const [roleResolved, setRoleResolved] = useState(false);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged((userState) => {
+    const subscriber = auth().onAuthStateChanged(userState => {
       setUser(userState);
       setInitializing(false);
     });
@@ -33,41 +33,54 @@ const App = () => {
       .collection('users')
       .doc(user.uid)
       .onSnapshot(
-        (doc) => {
+        doc => {
           const userData = doc.data();
           setRole(userData?.role || null);
           setRoleResolved(true);
         },
-        (error) => {
+        error => {
           console.error('Error al escuchar rol de usuario:', error);
           setRole(null);
           setRoleResolved(true);
-        }
+        },
       );
 
     return () => unsubscribe();
   }, [user]);
-    useEffect(() => {
+  useEffect(() => {
     console.log('🚀 APP INICIADA');
   }, []);
 
-
   if (initializing || (user && !roleResolved)) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
-  if (!user) return <LoginScreen onLoginSuccess={() => {}} />;
-  if (role === 'tutor') return <TutorMainScreen />;
-  if (role === 'child') return <ChildMainScreen />;
+  if (!user) {
+    return <LoginScreen onLoginSuccess={() => {}} />;
+  }
+  if (role === 'tutor') {
+    return <TutorMainScreen />;
+  }
+  if (role === 'child') {
+    return <ChildMainScreen />;
+  }
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={styles.centered}>
       <ActivityIndicator size="large" />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default App;

@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
-import { requestCameraPermission, checkCameraPermission } from '../utils/permissions';
+import {useState, useEffect} from 'react';
+import {
+  requestCameraPermission,
+  checkCameraPermission,
+} from '../utils/permissions';
 
 export const useCameraPermission = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -48,5 +51,5 @@ export const useCameraPermission = () => {
     setIsChecking(false);
   };
 
-  return { hasPermission, isChecking, retry };
+  return {hasPermission, isChecking, retry};
 };

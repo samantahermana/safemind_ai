@@ -1,81 +1,159 @@
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-export const sendriskalert = onDocumentCreated("alerts/{alertId}", async (event) => {
-  const newValue = event.data?.data();
-  if (!newValue) return null;
-
-  const riskLevel: number = newValue.riskLevel;
-  const tutorId: string = newValue.tutorId;
-  const childEmail: string = newValue.childEmail || "Hijo";
-  const sender: string = newValue.sender || "Desconocido";
-  const groomingStage: string = newValue.groomingStage || "";
-
-  // Extraer nombre del hijo desde el email
-  const childName = childEmail.split("@")[0];
-
-  // Enviar notificación para alertas de nivel 5 o superior
-  if (riskLevel >= 5) {
-    try {
-      const userDoc = await admin.firestore().collection("users").doc(tutorId).get();
-      const userData = userDoc.data();
-
-      if (!userDoc.exists || !userData?.fcmToken) {
-        console.log(`Tutor ${tutorId} sin token FCM.`);
-        return null;
-      }
-
-      // Determinar título según nivel de riesgo
-      let title: string;
-      
-      if (riskLevel >= 9) {
-        title = "🚨 ALERTA CRÍTICA";
-      } else if (riskLevel >= 7) {
-        title = "⚠️ ALERTA IMPORTANTE";
-      } else {
-        title = "⚡ AVISO PREVENTIVO";
-      }
-
-      // Construir mensaje detallado
-      let body = `${childName} - Nivel ${riskLevel}/10`;
-      if (groomingStage) {
-        body += ` (${groomingStage})`;
-      }
-
-      // Enviar solo data payload para que los handlers de la app muestren la notificación
-      const message = {
-        token: userData.fcmToken,
-        data: {
-          alertId: event.params.alertId,
-          riskLevel: String(riskLevel),
-          childEmail: childEmail,
-          sender: sender,
-          type: "risk_alert",
-          groomingStage: groomingStage,
-          title: title,
-          body: body,
-        },
-        android: {
-          priority: "high" as const,
-        },
-      };
-
-      await admin.messaging().send(message);
-      console.log(`✅ Notificación enviada a tutor ${tutorId} - Nivel ${riskLevel}`);
-    } catch (error) {
-      console.error("❌ Error al enviar notificación:", error);
-      
-      // Si el token es inválido, eliminarlo
-      if ((error as any).code === "messaging/invalid-registration-token" ||
-          (error as any).code === "messaging/registration-token-not-registered") {
-        console.log("Token inválido, eliminando de Firestore...");
-        await admin.firestore().collection("users").doc(tutorId).update({
-          fcmToken: admin.firestore.FieldValue.delete(),
-        });
-      }
-    }
+const maskToken = (token: string): string => {
+  if (!token) {
+    return "<empty>";
   }
-  return null;
-});
+
+  if (token.length <= 12) {
+    return "***";
+  }
+
+  return `${token.slice(0, 6)}...${token.slice(-6)}`;
+};
+
+export const sendriskalert = onDocumentCreated(
+  "alerts/{alertId}",
+  async (event) => {
+    const alertId = event.params.alertId;
+    const newValue = event.data?.data();
+    if (!newValue) {
+      console.warn(
+        `[sendriskalert] Evento sin data para alertId=${alertId}`,
+      );
+      return null;
+    }
+
+    const riskLevel: number = newValue.riskLevel;
+    const tutorId: string = newValue.tutorId;
+    const childEmail: string = newValue.childEmail || "Hijo";
+    const sender: string = newValue.sender || "Desconocido";
+    const groomingStage: string = newValue.groomingStage || "";
+
+    console.log(
+      `[sendriskalert] Trigger alertId=${alertId} tutorId=${tutorId} ` +
+      `riskLevel=${riskLevel} sender=${sender}`,
+    );
+
+    // Extraer nombre del hijo desde el email
+    const childName = childEmail.split("@")[0];
+
+    // Enviar notificación para alertas de nivel 5 o superior
+    if (riskLevel >= 5) {
+      try {
+        console.log(
+          `[sendriskalert] Buscando token FCM de tutorId=${tutorId}`,
+        );
+
+        const userDoc = await admin.firestore()
+          .collection("users")
+          .doc(tutorId)
+          .get();
+        const userData = userDoc.data();
+
+        if (!userDoc.exists || !userData?.fcmToken) {
+          console.warn(
+            `[sendriskalert] Tutor sin token FCM tutorId=${tutorId}`,
+          );
+          return null;
+        }
+
+        const fcmToken = String(userData.fcmToken);
+        console.log(
+          `[sendriskalert] Token encontrado tutorId=${tutorId} ` +
+          `token=${maskToken(fcmToken)}`,
+        );
+
+        // Determinar título según nivel de riesgo
+        let title: string;
+
+        if (riskLevel >= 9) {
+          title = "🚨 ALERTA CRÍTICA";
+        } else if (riskLevel >= 7) {
+          title = "⚠️ ALERTA IMPORTANTE";
+        } else {
+          title = "⚡ AVISO PREVENTIVO";
+        }
+
+        // Construir mensaje detallado
+        let body = `${childName} - Nivel ${riskLevel}/10`;
+        if (groomingStage) {
+          body += ` (${groomingStage})`;
+        }
+
+        // Enviar solo data payload para que los handlers de la app muestren
+        // la notificación
+        const message = {
+          token: fcmToken,
+          notification: {
+            title: title,
+            body: body,
+          },
+          data: {
+            alertId: event.params.alertId,
+            riskLevel: String(riskLevel),
+            childEmail: childEmail,
+            sender: sender,
+            type: "risk_alert",
+            groomingStage: groomingStage,
+            title: title,
+            body: body,
+          },
+          android: {
+            priority: "high" as const,
+          },
+        };
+
+        console.log(
+          `[sendriskalert] Enviando FCM alertId=${alertId} ` +
+          `priority=${message.android.priority}`,
+        );
+
+        const messageId = await admin.messaging().send(message);
+
+        console.log(
+          `[sendriskalert] ✅ FCM enviado alertId=${alertId} ` +
+          `messageId=${messageId} tutorId=${tutorId} riskLevel=${riskLevel}`,
+        );
+      } catch (error: unknown) {
+        console.error(
+          `[sendriskalert] ❌ Error enviando alertId=${alertId}`,
+          error,
+        );
+
+        const errorCode =
+            typeof error === "object" && error !== null && "code" in error ?
+              String(error.code) :
+              "";
+
+        console.error(
+          `[sendriskalert] errorCode=${errorCode || "unknown"} ` +
+          `tutorId=${tutorId}`,
+        );
+
+        // Si el token es inválido, eliminarlo
+        if (
+          errorCode === "messaging/invalid-registration-token" ||
+            errorCode === "messaging/registration-token-not-registered"
+        ) {
+          console.warn(
+            `[sendriskalert] Token inválido, borrando en tutorId=${tutorId}`,
+          );
+          await admin.firestore().collection("users").doc(tutorId).update({
+            fcmToken: admin.firestore.FieldValue.delete(),
+          });
+        }
+      }
+    } else {
+      console.log(
+        `[sendriskalert] Alerta ignorada por riesgo bajo ` +
+        `alertId=${alertId} riskLevel=${riskLevel}`,
+      );
+    }
+
+    return null;
+  },
+);
