@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:emu": "react-native run-android --deviceId emulator-5554 --main-activity TutorLauncher",
+    "android:emu:clean": "cd android && ./gradlew clean && cd .. && react-native run-android --deviceId emulator-5554 --main-activity TutorLauncher",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
