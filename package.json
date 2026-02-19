@@ -3,12 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "android:emu": "react-native run-android --deviceId emulator-5554 --main-activity TutorLauncher",
-    "android:emu:clean": "cd android && ./gradlew clean && cd .. && react-native run-android --deviceId emulator-5554 --main-activity TutorLauncher",
-    "android:phones:connect": "adb connect 192.168.1.63:5555 && adb connect 192.168.1.35:5555",
-    "android:phones": "npm run android:phones:connect && react-native run-android --deviceId 192.168.1.63:5555 --main-activity TutorLauncher && react-native run-android --deviceId 192.168.1.35:5555 --main-activity TutorLauncher",
-    "ios": "react-native run-ios",
+    "android:local": "MOTO=$(adb devices -l | grep model:moto_e13 | grep -v '^adb-' | head -n1 | awk '{print $1}'); SAMSUNG=$(adb devices -l | grep model:SM_A546E | grep -v '^adb-' | head -n1 | awk '{print $1}'); [ -n \"$MOTO\" ] || { echo \"Moto e13 no encontrado en adb\"; exit 1; }; [ -n \"$SAMSUNG\" ] || { echo \"Samsung A54 no encontrado en adb\"; exit 1; }; cd android && ./gradlew app:assembleDebug -x lint && cd ..; adb -s \"$MOTO\" reverse tcp:8081 tcp:8081; adb -s \"$SAMSUNG\" reverse tcp:8081 tcp:8081; adb -s \"$MOTO\" uninstall com.safemindai || true; adb -s \"$MOTO\" install -r android/app/build/outputs/apk/debug/app-debug.apk; adb -s \"$MOTO\" shell am start -n com.safemindai/.TutorLauncher; adb -s \"$SAMSUNG\" uninstall com.safemindai || true; adb -s \"$SAMSUNG\" install -r android/app/build/outputs/apk/debug/app-debug.apk; adb -s \"$SAMSUNG\" shell am start -n com.safemindai/.TutorLauncher",
+    "android:local:clean": "MOTO=$(adb devices -l | grep model:moto_e13 | grep -v '^adb-' | head -n1 | awk '{print $1}'); SAMSUNG=$(adb devices -l | grep model:SM_A546E | grep -v '^adb-' | head -n1 | awk '{print $1}'); [ -n \"$MOTO\" ] || { echo \"Moto e13 no encontrado en adb\"; exit 1; }; [ -n \"$SAMSUNG\" ] || { echo \"Samsung A54 no encontrado en adb\"; exit 1; }; cd android && ./gradlew clean app:assembleDebug -x lint && cd ..; adb -s \"$MOTO\" reverse tcp:8081 tcp:8081; adb -s \"$SAMSUNG\" reverse tcp:8081 tcp:8081; adb -s \"$MOTO\" uninstall com.safemindai || true; adb -s \"$MOTO\" install -r android/app/build/outputs/apk/debug/app-debug.apk; adb -s \"$MOTO\" shell am start -n com.safemindai/.TutorLauncher; adb -s \"$SAMSUNG\" uninstall com.safemindai || true; adb -s \"$SAMSUNG\" install -r android/app/build/outputs/apk/debug/app-debug.apk; adb -s \"$SAMSUNG\" shell am start -n com.safemindai/.TutorLauncher",
+    "android:apk:release": "cd android && ./gradlew app:assembleRelease -x lint && cd ..",
+    "android:apk:release:clean": "cd android && ./gradlew clean app:assembleRelease -x lint && cd ..",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint ."
